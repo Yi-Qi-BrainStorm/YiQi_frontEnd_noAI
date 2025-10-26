@@ -1,21 +1,5 @@
-import {
-  createRouter,
-  createWebHistory,
-  type RouteRecordRaw,
-} from "vue-router";
-
-const routes: RouteRecordRaw[] = [
-  {
-    path: "/",
-    name: "Home",
-    component: () => import("@/views/home/index.vue"),
-  },
-  {
-    path: "/about",
-    name: "About",
-    component: () => import("@/views/about/index.vue"),
-  },
-];
+import { createRouter, createWebHistory } from "vue-router";
+import { routes } from "./routes";
 
 // 2. 创建路由实例
 const router = createRouter({
