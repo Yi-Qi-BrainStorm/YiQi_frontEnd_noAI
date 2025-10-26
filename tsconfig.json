@@ -3,5 +3,16 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "compilerOptions": {
+    // ... 其他配置，如 target, module, etc.
+    // 1. 设置路径解析的基准目录 (通常是项目根目录)
+    "baseUrl": ".", 
+    // 2. 核心配置：路径映射
+    "paths": {
+      // 告诉 TypeScript：当代码中出现 @/* 时，去 src/* 中查找
+      "@/*": ["src/*"],
+      "@assets/*": ["src/assets/*"]
+    }
+  },
 }
