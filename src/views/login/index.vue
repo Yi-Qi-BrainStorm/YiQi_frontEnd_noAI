@@ -48,8 +48,10 @@ const resetForm = () => {
   <div class="login-container">
     <div class="login-card">
       <div class="login-header">
+        <div class="logo-container">
+          <img src="/logo.png" alt="logo" class="logo" />
+        </div>
         <h2 class="login-title">欢迎登录</h2>
-        <p class="login-subtitle">请输入您的账号和密码</p>
       </div>
 
       <el-form
@@ -117,14 +119,18 @@ const resetForm = () => {
     @apply w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden;
 
     .login-header {
-      @apply bg-gradient-to-r from-blue-500 to-indigo-600 p-8 text-center;
+      @apply bg-white p-8 text-center border-b border-gray-100;
 
-      .login-title {
-        @apply text-3xl font-bold text-white mb-2;
+      .logo-container {
+        @apply flex justify-center mb-4;
+
+        .logo {
+          @apply h-16 w-16 object-contain p-2 rounded-lg border border-gray-200 bg-white shadow-sm;
+        }
       }
 
-      .login-subtitle {
-        @apply text-blue-100;
+      .login-title {
+        @apply text-2xl font-bold text-gray-800 mb-2;
       }
     }
 
@@ -142,11 +148,11 @@ const resetForm = () => {
         @apply w-full flex justify-between items-center gap-4;
 
         .login-button {
-          @apply flex-1 py-3 text-lg font-semibold rounded-lg transition-all duration-300;
+          @apply flex-1 py-3 text-base font-semibold rounded-lg transition-all duration-300 bg-blue-500 hover:bg-blue-600;
         }
 
         .register-button {
-          @apply flex-1 py-3 text-lg font-semibold rounded-lg transition-all duration-300;
+          @apply flex-1 py-3 text-base font-semibold rounded-lg transition-all duration-300 bg-green-500 hover:bg-green-600;
         }
       }
     }
@@ -169,7 +175,7 @@ const resetForm = () => {
         @apply p-6;
 
         .login-title {
-          @apply text-2xl;
+          @apply text-xl;
         }
       }
 
