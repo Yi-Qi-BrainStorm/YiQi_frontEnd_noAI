@@ -49,4 +49,13 @@ export default defineConfig({
       "@assets": resolve(__dirname, "src/assets"),
     },
   },
+  server: {
+    port: 3000,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+    },
+  },
 });
