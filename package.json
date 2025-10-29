@@ -13,6 +13,7 @@
     "tailwind-init": "tailwindcss init -p"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
     "@tailwindcss/vite": "^4.1.16",
     "element-plus": "^2.11.5",
     "pinia": "^3.0.3",

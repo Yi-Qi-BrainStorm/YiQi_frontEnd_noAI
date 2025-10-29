@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
 import type { LoginForm } from "./types";
-
+import { ref, reactive } from "vue";
+import { User, Lock } from "@element-plus/icons-vue";
 // 表单数据
 const loginForm = reactive<LoginForm>({
   username: "",
@@ -28,6 +28,12 @@ const rules = {
 const handleLogin = () => {
   // TODO: 实现登录逻辑
   console.log("登录表单数据:", loginForm);
+};
+
+// 注册方法
+const handleRegister = () => {
+  // TODO: 实现注册逻辑
+  console.log("跳转到注册页面");
 };
 
 // 重置表单
@@ -57,8 +63,8 @@ const resetForm = () => {
           <el-input
             v-model="loginForm.username"
             placeholder="请输入用户名"
-            prefix-icon="User"
-            clearable
+            :prefix-icon="User"
+            :clearable="true"
           />
         </el-form-item>
 
@@ -67,7 +73,7 @@ const resetForm = () => {
             v-model="loginForm.password"
             type="password"
             placeholder="请输入密码"
-            prefix-icon="Lock"
+            :prefix-icon="Lock"
             show-password
           />
         </el-form-item>
@@ -76,7 +82,7 @@ const resetForm = () => {
           <el-checkbox v-model="loginForm.rememberMe"> 记住我 </el-checkbox>
         </el-form-item>
 
-        <el-form-item>
+        <el-form-item class="buttons">
           <el-button
             type="primary"
             @click="handleLogin"
@@ -84,6 +90,13 @@ const resetForm = () => {
             :loading="false"
           >
             登录
+          </el-button>
+          <el-button
+            type="success"
+            @click="handleRegister"
+            class="register-button"
+          >
+            注册
           </el-button>
         </el-form-item>
       </el-form>
@@ -125,9 +138,16 @@ const resetForm = () => {
           @apply text-gray-700 font-medium;
         }
       }
+      .buttons {
+        @apply w-full flex justify-between items-center gap-4;
 
-      .login-button {
-        @apply w-full py-3 text-lg font-semibold rounded-lg transition-all duration-300;
+        .login-button {
+          @apply flex-1 py-3 text-lg font-semibold rounded-lg transition-all duration-300;
+        }
+
+        .register-button {
+          @apply flex-1 py-3 text-lg font-semibold rounded-lg transition-all duration-300;
+        }
       }
     }
 
@@ -155,6 +175,10 @@ const resetForm = () => {
 
       .login-form {
         @apply p-6;
+
+        .buttons {
+          @apply flex-col gap-2;
+        }
       }
     }
   }
