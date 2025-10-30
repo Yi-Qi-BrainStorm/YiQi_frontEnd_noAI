@@ -11,3 +11,5 @@ export function setupPinia(app: App) {
 }
 
 // ... 导出其他 store
+
+export { useAuthStore } from "@/stores/auth";

@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import type { LoginForm } from "./types";
 import { ref, reactive } from "vue";
+import { useRouter } from "vue-router";
 import { User, Lock } from "@element-plus/icons-vue";
+import { useAuth } from "@/composables";
+import { ElMessage } from "element-plus";
+import type { LoginRequest, RegisterRequest } from "@/types/api/auth";
+
+const { login, register } = useAuth();
+
+// 路由
+const router = useRouter();
+
 // 表单数据
 const loginForm = reactive<LoginForm>({
   username: "",
@@ -24,23 +34,52 @@ const rules = {
   ],
 };
 
-// 登录方法（框架已搭好，具体逻辑需手写完成）
-const handleLogin = () => {
-  // TODO: 实现登录逻辑
-  console.log("登录表单数据:", loginForm);
+// 登录方法
+const handleLogin = async () => {
+  // 验证表单
+  if (!loginFormRef.value) return;
+
+  try {
+    await loginFormRef.value.validate();
+    // 表单验证通过后执行登录，只传递需要的字段
+    const loginData: LoginRequest = {
+      username: loginForm.username,
+      password: loginForm.password,
+    };
+    await login(loginData);
+    ElMessage.success("登录成功");
+    router.push("/about");
+  } catch (err: any) {
+    console.error("登录失败:", err);
+    ElMessage.error(err.message || "登录失败");
+  }
 };
 
 // 注册方法
-const handleRegister = () => {
-  // TODO: 实现注册逻辑
-  console.log("跳转到注册页面");
+const handleRegister = async () => {
+  // 验证表单
+  if (!loginFormRef.value) return;
+
+  try {
+    await loginFormRef.value.validate();
+    // 表单验证通过后执行注册，只传递需要的字段
+    const registerData: RegisterRequest = {
+      username: loginForm.username,
+      password: loginForm.password,
+    };
+    await register(registerData);
+    ElMessage.success("注册成功");
+  } catch (err: any) {
+    console.error("注册失败:", err);
+    ElMessage.error(err.message || "注册失败");
+  }
 };
 
 // 重置表单
 const resetForm = () => {
-  loginForm.username = "";
-  loginForm.password = "";
-  loginForm.rememberMe = false;
+  if (loginFormRef.value) {
+    loginFormRef.value.resetFields();
+  }
 };
 </script>
 

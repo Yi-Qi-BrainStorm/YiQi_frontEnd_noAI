@@ -10,9 +10,33 @@ const api = axios.create({
 });
 
 //请求拦截器
-api.interceptors.request.use();
+api.interceptors.request.use(
+  (config) => {
+    // 从本地存储获取token
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
 //响应拦截器
-api.interceptors.response.use();
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      // token过期或无效，清除本地存储
+      localStorage.removeItem("auth_token");
+    }
+    return Promise.reject(error);
+  },
+);
 
 export class ApiService {
   //get
@@ -30,6 +54,7 @@ export class ApiService {
     const response = await api.post<T>(url, data, config);
     return response.data;
   }
+
   //批量请求
   static async batch<T = any>(
     requests: Array<() => Promise<any>>,
@@ -73,3 +98,5 @@ export class ApiService {
     throw lastError;
   }
 }
+
+export default api;
