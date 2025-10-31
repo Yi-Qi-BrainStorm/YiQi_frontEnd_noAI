@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { LoginForm } from "./types";
 import { ref, reactive } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { User, Lock } from "@element-plus/icons-vue";
 import { useAuth } from "@/composables";
 import { ElMessage } from "element-plus";
@@ -11,6 +11,7 @@ const { login, register } = useAuth();
 
 // 路由
 const router = useRouter();
+const route = useRoute();
 
 // 表单数据
 const loginForm = reactive<LoginForm>({
@@ -48,7 +49,14 @@ const handleLogin = async () => {
     };
     await login(loginData);
     ElMessage.success("登录成功");
-    router.push("/about");
+    const redirectQuery = Array.isArray(route.query.redirect)
+      ? route.query.redirect[0]
+      : route.query.redirect;
+    const target =
+      typeof redirectQuery === "string" && redirectQuery
+        ? decodeURIComponent(redirectQuery)
+        : "/about";
+    router.replace(target);
   } catch (err: any) {
     console.error("登录失败:", err);
     ElMessage.error(err.message || "登录失败");

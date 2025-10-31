@@ -1,5 +1,7 @@
 import { API_BASE_URL, API_TIMEOUT } from "@/constants/api";
 import axios from "axios";
+import type { AxiosRequestHeaders } from "axios";
+import router from "@/router";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -14,8 +16,9 @@ api.interceptors.request.use(
   (config) => {
     // 从本地存储获取token
     const token = localStorage.getItem("auth_token");
+    if (!config.headers) config.headers = {} as AxiosRequestHeaders;
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      (config.headers as any).Authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -25,14 +28,26 @@ api.interceptors.request.use(
 );
 
 //响应拦截器
+let isRedirectingToLogin = false;
+
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
     if (error.response?.status === 401) {
-      // token过期或无效，清除本地存储
+      // token过期或无效，清除本地存储并一次性跳转登录
       localStorage.removeItem("auth_token");
+      if (!isRedirectingToLogin) {
+        isRedirectingToLogin = true;
+        const current = router.currentRoute.value;
+        const redirect = encodeURIComponent(current.fullPath);
+        router.replace({ path: "/login", query: { redirect } }).finally(() => {
+          setTimeout(() => {
+            isRedirectingToLogin = false;
+          }, 0);
+        });
+      }
     }
     return Promise.reject(error);
   },
