@@ -27,6 +27,12 @@ export function useAuth() {
     return response;
   };
 
+  //检测token是否过期
+  const check = async (): Promise<any> => {
+    const response = await authStore.check();
+    return response;
+  };
+
   return {
     // 响应式状态
     user,
@@ -39,8 +45,8 @@ export function useAuth() {
     // 认证操作
     login,
     register,
+    check,
     // logout,
-    // checkAuth,
     // refreshToken,
     // clearError,
     // initialize,

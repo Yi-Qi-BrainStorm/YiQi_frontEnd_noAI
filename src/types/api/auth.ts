@@ -13,3 +13,8 @@ export interface RegisterRequest {
   username: string;
   password: string;
 }
+
+export interface ProfileResponse {
+  message: string;
+  user: User;
+}

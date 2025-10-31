@@ -13,4 +13,7 @@ export class authService {
       registerData,
     );
   }
+  static async check(): Promise<any> {
+    return await ApiService.post("auth/check");
+  }
 }

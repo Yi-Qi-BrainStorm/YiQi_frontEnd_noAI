@@ -35,11 +35,18 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  //用户注册
   const register = async (registerData: RegisterRequest): Promise<any> => {
     const response = await authService.register(registerData);
 
     //Notification
     return response;
+  };
+
+  //检测token是否过期
+  const check = async (): Promise<any> => {
+    const response = await authService.check();
+    if (response) return response;
   };
 
   return {
@@ -56,8 +63,8 @@ export const useAuthStore = defineStore("auth", () => {
     // 方法
     login,
     register,
+    check,
     //logout,
-    //checkAuth,
     //refreshToken,
     //clearError,
     //clearAuth,
