@@ -2,8 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import { routes } from "./routes";
 import { useAuth } from "@/composables";
 
-const { check } = useAuth();
-
 // 2. 创建路由实例
 const router = createRouter({
   // 使用 HTML5 History 模式 (推荐，地址栏无 #)
@@ -14,6 +12,8 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, _, next) => {
+  // 延迟获取，避免在 Pinia 激活前访问 store
+  const { check } = useAuth();
   const token = localStorage.getItem("auth_token");
   const requiresAuth = to.meta.requiresAuth as boolean | undefined;
 
