@@ -94,6 +94,8 @@ const resetForm = () => {
 
 <template>
   <div class="login-container">
+    <div class="background-left"></div>
+    <div class="background-right"></div>
     <LoginCard
       ref="loginCardRef"
       v-model="loginForm"
@@ -107,6 +109,95 @@ const resetForm = () => {
 
 <style lang="scss" scoped>
 .login-container {
-  @apply min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4;
+  @apply min-h-screen flex items-center justify-center p-4 relative overflow-hidden;
+
+  // 左侧背景 - 使用卡片右侧的米黄色调
+  .background-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      rgb(240, 235, 200) 0%,
+      rgb(240, 235, 210) 25%,
+      rgb(250, 248, 230) 50%,
+      rgb(250, 248, 230) 75%,
+      rgb(254, 255, 244) 100%
+    );
+    z-index: 0;
+
+    // 添加装饰纹理
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+        radial-gradient(
+          circle at 30% 70%,
+          rgba(180, 142, 95, 0.03) 0%,
+          transparent 50%
+        ),
+        radial-gradient(
+          circle at 70% 30%,
+          rgba(160, 120, 70, 0.02) 0%,
+          transparent 50%
+        );
+      pointer-events: none;
+    }
+  }
+
+  // 右侧背景 - 使用卡片左侧的渐变色调
+  .background-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      rgb(254, 255, 244) 0%,
+      rgb(250, 248, 230) 50%,
+      rgb(245, 242, 215) 100%
+    );
+    z-index: 0;
+
+    // 添加装饰纹理
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+        radial-gradient(
+          circle at 70% 80%,
+          rgba(180, 142, 95, 0.03) 0%,
+          transparent 50%
+        ),
+        radial-gradient(
+          circle at 30% 20%,
+          rgba(160, 120, 70, 0.03) 0%,
+          transparent 50%
+        ),
+        radial-gradient(
+          circle at 60% 40%,
+          rgba(200, 170, 120, 0.02) 0%,
+          transparent 50%
+        );
+      pointer-events: none;
+    }
+  }
+
+  // 确保登录卡片在背景之上
+  > * {
+    position: relative;
+    z-index: 10;
+  }
 }
 </style>
