@@ -29,7 +29,7 @@ router.beforeEach(async (to, _, next) => {
   if (to.path === "/login" && token) {
     try {
       await check();
-      const target = (to.query.redirect as string) || "/about";
+      const target = (to.query.redirect as string) || "/home";
       return next(target);
     } catch (error) {
       localStorage.removeItem("auth_token");

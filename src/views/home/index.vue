@@ -1,32 +1,9 @@
 <script setup lang="ts">
-// About 页面逻辑（可根据需要扩展）
+import TopNav from "@/component/topnav/index.vue";
 </script>
 
 <template>
-  <div class="about-container">
-    <div class="about-card">
-      <h1 class="about-title">关于意启平台</h1>
-      <p class="about-description">
-        这是一个基于 Vue3 + TypeScript + Vite 构建的现代化前端应用。
-      </p>
-      <div class="features">
-        <el-card
-          class="feature-card"
-          v-for="feature in features"
-          :key="feature.title"
-        >
-          <template #header>
-            <div class="card-header">
-              <span>{{ feature.title }}</span>
-            </div>
-          </template>
-          <div class="card-content">
-            {{ feature.description }}
-          </div>
-        </el-card>
-      </div>
-    </div>
-  </div>
+  <top-nav></top-nav>
 </template>
 
 <script lang="ts">

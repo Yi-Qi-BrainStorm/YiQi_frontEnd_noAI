@@ -56,7 +56,7 @@ const handleLogin = async () => {
     const target =
       typeof redirectQuery === "string" && redirectQuery
         ? decodeURIComponent(redirectQuery)
-        : "/about";
+        : "/home";
     router.replace(target);
   } catch (err: any) {
     console.error("登录失败:", err);
