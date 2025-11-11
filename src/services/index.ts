@@ -3,3 +3,5 @@ export { default as api, ApiService } from "./api";
 
 //业务服务
 export { authService } from "./authService";
+
+export { profileService } from "./profileService";

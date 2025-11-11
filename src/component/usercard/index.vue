@@ -1,13 +1,41 @@
 <script lang="ts" setup>
-import { User, Setting, SwitchButton } from "@element-plus/icons-vue";
-import { ref } from "vue";
+import {
+  User,
+  Setting,
+  SwitchButton,
+  Loading,
+  Warning,
+} from "@element-plus/icons-vue";
+import { onMounted, computed, ref } from "vue";
+import { useProfileStore } from "@/stores/profile";
 
-// 模拟用户数据
-const userInfo = ref({
-  name: "用户名",
-  email: "user@example.com",
-  role: "管理员",
-  avatar: "/public/logo.png",
+// 使用ProfileStore
+const profileStore = useProfileStore();
+
+// 计算属性：处理用户信息，提供默认值
+const userInfo = computed(() => {
+  if (!profileStore.user) {
+    return {
+      name: "加载中...",
+      email: "请稍候",
+      role: "用户",
+      avatar: "/logo.png",
+    };
+  }
+
+  return {
+    name: profileStore.user.username || "未知用户",
+    email: profileStore.user.email || "未设置邮箱",
+    role: profileStore.user.role || "普通用户",
+    avatar: profileStore.user.avatar || "/logo.png",
+  };
+});
+
+// 组件挂载时获取用户信I
+onMounted(() => {
+  if (!profileStore.user) {
+    profileStore.fetchProfile();
+  }
 });
 
 // 菜单项
@@ -36,7 +64,31 @@ const handleMenuClick = (action: string) => {
 </script>
 
 <template>
-  <el-card class="user-card">
+  <!-- 加载状态 -->
+  <el-card v-if="profileStore.loading" class="user-card">
+    <div class="loading-container">
+      <el-icon class="loading-icon">
+        <Loading />
+      </el-icon>
+      <span>加载用户信息中...</span>
+    </div>
+  </el-card>
+
+  <!-- 错误状态 -->
+  <el-card v-else-if="profileStore.error" class="user-card">
+    <div class="error-container">
+      <el-icon class="error-icon">
+        <Warning />
+      </el-icon>
+      <span>{{ profileStore.error }}</span>
+      <el-button type="text" @click="profileStore.fetchProfile()"
+        >重试</el-button
+      >
+    </div>
+  </el-card>
+
+  <!-- 正常显示用户信息 -->
+  <el-card v-else class="user-card">
     <template #header>
       <div class="user-header">
         <div class="user-avatar">
@@ -68,7 +120,7 @@ const handleMenuClick = (action: string) => {
 
 <style lang="scss" scoped>
 .user-card {
-  width: 280px;
+  width: 35vw;
 
   :deep(.el-card__body) {
     padding: 0;
@@ -83,7 +135,7 @@ const handleMenuClick = (action: string) => {
 .user-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 20px;
 }
 
 .user-avatar {
@@ -171,5 +223,42 @@ const handleMenuClick = (action: string) => {
 
 .menu-item:last-child:hover .menu-label {
   color: #f56c6c;
+}
+
+// 加载状态样式
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 20px;
+  color: #909399;
+
+  .loading-icon {
+    animation: rotate 2s linear infinite;
+  }
+}
+
+// 错误状态样式
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 30px 20px;
+  color: #f56c6c;
+
+  .error-icon {
+    font-size: 24px;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

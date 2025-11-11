@@ -2,6 +2,10 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { User } from "@element-plus/icons-vue";
 import userCard from "@/component/usercard/index.vue";
+import { useProfileStore } from "@/stores/profile";
+
+// 使用ProfileStore
+const profileStore = useProfileStore();
 
 // 控制用户卡片显示状态
 const showUserCard = ref(false);
@@ -10,6 +14,12 @@ const userIconRef = ref<HTMLElement>();
 // 显示/隐藏用户卡片
 function toggleUsercard(event: Event) {
   event.stopPropagation();
+
+  // 如果是打开用户卡片，刷新用户信息
+  if (!showUserCard.value) {
+    profileStore.refreshProfile();
+  }
+
   showUserCard.value = !showUserCard.value;
 }
 
@@ -39,7 +49,7 @@ onUnmounted(() => {
     <el-menu class="el-menu" mode="horizontal" :ellipsis="false">
       <div class="left-menu">
         <el-menu-item index="0">
-          <img style="width: 50px" src="/public/logo.png" alt="logo" />
+          <img style="width: 50px" src="/logo.png" alt="logo" />
         </el-menu-item>
       </div>
       <div class="right-menu">
@@ -91,9 +101,9 @@ onUnmounted(() => {
   .user-card-container {
     position: absolute;
     top: 100%;
-    right: 0;
+    right: 10px;
     z-index: 1000;
-    margin-top: 8px;
+    margin-top: 10px;
 
     // 添加阴影和边框使其更突出
     :deep(.el-card) {

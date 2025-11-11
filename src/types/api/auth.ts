@@ -1,7 +1,10 @@
 //用户API类型
 export interface User {
-  username: string;
   id: string;
+  username: string;
+  email?: string;
+  role?: string;
+  avatar?: string;
 }
 
 export interface LoginRequest {
