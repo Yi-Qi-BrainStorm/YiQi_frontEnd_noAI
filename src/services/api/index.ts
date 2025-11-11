@@ -35,8 +35,9 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
-      // token过期或无效，清除本地存储并一次性跳转登录
+    // 处理认证失败（401）和权限不足（403）
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // 清除本地存储并一次性跳转登录
       localStorage.removeItem("auth_token");
       if (!isRedirectingToLogin) {
         isRedirectingToLogin = true;
