@@ -49,6 +49,35 @@ export default defineConfig({
       "@assets": resolve(__dirname, "src/assets"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // 将 Element Plus 相关的模块放入 main chunk，确保先初始化
+          if (id.includes("element-plus") || id.includes("@element-plus")) {
+            return "element-ui";
+          }
+
+          // 将 services 目录下的所有模块打包到同一个 chunk
+          if (id.includes("src/services/")) {
+            return "services";
+          }
+
+          // 将 composables 目录下的所有模块打包到同一个 chunk
+          if (id.includes("src/composables/")) {
+            return "composables";
+          }
+
+          // 其他第三方库
+          if (id.includes("node_modules/")) {
+            return "vendor";
+          }
+        },
+      },
+    },
+    // 调整 chunk 大小警告阈值到 1000KB
+    chunkSizeWarningLimit: 1000,
+  },
   server: {
     port: 3000,
     proxy: {

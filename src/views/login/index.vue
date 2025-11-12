@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { LoginForm } from "./types";
 import type { LoginCardExpose } from "@/component/logincard/types";
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuth } from "@/composables";
 import { ElMessage } from "element-plus";
@@ -15,7 +15,7 @@ const router = useRouter();
 const route = useRoute();
 
 // 表单数据
-const loginForm = reactive<LoginForm>({
+const loginForm = ref<LoginForm>({
   username: "",
   password: "",
   rememberMe: false,
@@ -45,8 +45,8 @@ const handleLogin = async () => {
     await loginCardRef.value.validate();
     // 表单验证通过后执行登录，只传递需要的字段
     const loginData: LoginRequest = {
-      username: loginForm.username,
-      password: loginForm.password,
+      username: loginForm.value.username,
+      password: loginForm.value.password,
     };
     await login(loginData);
     ElMessage.success("登录成功");
@@ -73,8 +73,8 @@ const handleRegister = async () => {
     await loginCardRef.value.validate();
     // 表单验证通过后执行注册，只传递需要的字段
     const registerData: RegisterRequest = {
-      username: loginForm.username,
-      password: loginForm.password,
+      username: loginForm.value.username,
+      password: loginForm.value.password,
     };
     await register(registerData);
     ElMessage.success("注册成功");
