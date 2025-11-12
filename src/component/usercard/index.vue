@@ -6,6 +6,7 @@ import {
   Loading,
   Warning,
 } from "@element-plus/icons-vue";
+import { markRaw } from "vue";
 import { onMounted, computed, ref } from "vue";
 import { useProfileStore } from "@/stores/profile";
 
@@ -38,11 +39,11 @@ onMounted(() => {
   }
 });
 
-// 菜单项
+// 菜单项 - 使用markRaw避免响应式化
 const menuItems = ref([
-  { icon: User, label: "个人资料", action: "profile" },
-  { icon: Setting, label: "设置", action: "settings" },
-  { icon: SwitchButton, label: "退出登录", action: "logout" },
+  { icon: markRaw(User), label: "个人资料", action: "profile" },
+  { icon: markRaw(Setting), label: "设置", action: "settings" },
+  { icon: markRaw(SwitchButton), label: "退出登录", action: "logout" },
 ]);
 
 // 处理菜单项点击

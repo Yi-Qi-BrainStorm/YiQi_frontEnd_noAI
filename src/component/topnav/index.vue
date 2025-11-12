@@ -11,10 +11,8 @@ const profileStore = useProfileStore();
 const showUserCard = ref(false);
 const userIconRef = ref<HTMLElement>();
 
-// 显示/隐藏用户卡片
-function toggleUsercard(event: Event) {
-  event.stopPropagation();
-
+// 显示/隐藏用户卡片 - 使用 Element Plus 的事件类型
+function toggleUsercard() {
   // 如果是打开用户卡片，刷新用户信息
   if (!showUserCard.value) {
     profileStore.refreshProfile();
@@ -23,13 +21,28 @@ function toggleUsercard(event: Event) {
   showUserCard.value = !showUserCard.value;
 }
 
-// 点击外部区域关闭用户卡片
+// 点击外部区域关闭用户卡片 - 改进的DOM安全检查
 function handleClickOutside(event: Event) {
-  if (
-    showUserCard.value &&
-    userIconRef.value &&
-    !userIconRef.value.contains(event.target as Node)
-  ) {
+  const target = event.target as Element;
+
+  // 检查点击是否在用户菜单项内
+  const isInMenuItem = Boolean(target.closest(".el-menu-item"));
+
+  // 如果点击的是菜单项，不处理
+  if (isInMenuItem) {
+    return;
+  }
+
+  // 安全检查：确保ref存在且是HTMLElement
+  if (!showUserCard.value) {
+    return;
+  }
+
+  // 检查点击是否在用户卡片内
+  const isInCard = Boolean(target.closest(".user-card-container"));
+
+  // 如果不在卡片内，关闭
+  if (!isInCard) {
     showUserCard.value = false;
   }
 }
@@ -66,8 +79,8 @@ onUnmounted(() => {
             <el-menu-item index="2-4-3">item three</el-menu-item>
           </el-sub-menu>
         </el-sub-menu>
-        <el-menu-item ref="userIconRef">
-          <el-icon @click="toggleUsercard">
+        <el-menu-item ref="userIconRef" @click="toggleUsercard">
+          <el-icon>
             <User />
           </el-icon>
         </el-menu-item>
@@ -75,7 +88,7 @@ onUnmounted(() => {
     </el-menu>
 
     <!-- 用户卡片 -->
-    <div v-if="showUserCard" class="user-card-container">
+    <div v-if="showUserCard" class="user-card-container" @click.stop>
       <userCard />
     </div>
   </div>
