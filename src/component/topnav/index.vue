@@ -3,6 +3,10 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { User } from "@element-plus/icons-vue";
 import userCard from "@/component/usercard/index.vue";
 import { useProfileStore } from "@/stores/profile";
+import { useRouter } from "vue-router";
+
+//取到路由器
+const router = useRouter();
 
 // 使用ProfileStore
 const profileStore = useProfileStore();
@@ -10,6 +14,13 @@ const profileStore = useProfileStore();
 // 控制用户卡片显示状态
 const showUserCard = ref(false);
 const userIconRef = ref<HTMLElement>();
+
+// 使用 Map 映射菜单 index 到路径
+const menuMap = new Map([
+  ["1", "/home/brainstorm"],
+  ["2", "/home/agent-settings"],
+  ["3", "/home/history"],
+]);
 
 // 显示/隐藏用户卡片 - 使用 Element Plus 的事件类型
 function toggleUsercard() {
@@ -47,6 +58,13 @@ function handleClickOutside(event: Event) {
   }
 }
 
+const handleMenuSelect = (index: string) => {
+  const path = menuMap.get(index);
+  if (path) {
+    router.push(path);
+  }
+};
+
 // 添加和移除点击事件监听器
 onMounted(() => {
   document.addEventListener("click", handleClickOutside);
@@ -59,26 +77,25 @@ onUnmounted(() => {
 
 <template>
   <div class="topnav-container">
-    <el-menu class="el-menu" mode="horizontal" :ellipsis="false">
+    <el-menu
+      class="el-menu"
+      mode="horizontal"
+      :ellipsis="false"
+      @select="handleMenuSelect"
+    >
       <div class="left-menu">
         <el-menu-item index="0">
           <img style="width: 50px" src="/logo.png" alt="logo" />
         </el-menu-item>
       </div>
       <div class="right-menu">
-        <el-menu-item index="1">Processing Center</el-menu-item>
-        <el-sub-menu index="2">
-          <template #title>Workspace</template>
-          <el-menu-item index="2-1">item one</el-menu-item>
-          <el-menu-item index="2-2">item two</el-menu-item>
-          <el-menu-item index="2-3">item three</el-menu-item>
-          <el-sub-menu index="2-4">
-            <template #title>item four</template>
-            <el-menu-item index="2-4-1">item one</el-menu-item>
-            <el-menu-item index="2-4-2">item two</el-menu-item>
-            <el-menu-item index="2-4-3">item three</el-menu-item>
-          </el-sub-menu>
-        </el-sub-menu>
+        <el-menu-item index="1" path="/home/brainstorm"
+          >BrainStorm</el-menu-item
+        >
+        <el-menu-item index="2" path="/home/agent-setting"
+          >Agent设置</el-menu-item
+        >
+        <el-menu-item index="3" path="/home/history">历史记录</el-menu-item>
         <el-menu-item ref="userIconRef" @click="toggleUsercard">
           <el-icon>
             <User />

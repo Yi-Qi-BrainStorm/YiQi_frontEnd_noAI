@@ -16,5 +16,16 @@ export const routes: RouteRecordRaw[] = [
     name: "Home",
     meta: { requiresAuth: true },
     component: () => import("@/views/home/index.vue"),
+    children: [
+      {
+        path: "brainstorm",
+        component: () => import("@/views/brainStorm/index.vue"),
+      },
+      {
+        path: "agent-settings",
+        component: () => import("@/views/agentSettings/index.vue"),
+      },
+      { path: "history", component: () => import("@/views/history/index.vue") },
+    ],
   },
 ];
