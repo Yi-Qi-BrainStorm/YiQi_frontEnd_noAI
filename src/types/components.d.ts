@@ -26,7 +26,11 @@ declare module 'vue' {
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
+    Logincard: typeof import('./../components/logincard/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SidebarMenu: typeof import('./../components/sidebarMenu/index.vue')['default']
+    Topnav: typeof import('./../components/topnav/index.vue')['default']
+    Usercard: typeof import('./../components/usercard/index.vue')['default']
   }
 }

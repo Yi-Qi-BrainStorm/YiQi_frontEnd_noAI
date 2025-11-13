@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { User } from "@element-plus/icons-vue";
-import userCard from "@/component/usercard/index.vue";
+import userCard from "@/components/usercard/index.vue";
 import { useProfileStore } from "@/stores/profile";
 import { useRouter } from "vue-router";
 
@@ -89,13 +89,9 @@ onUnmounted(() => {
         </el-menu-item>
       </div>
       <div class="right-menu">
-        <el-menu-item index="1" path="/home/brainstorm"
-          >BrainStorm</el-menu-item
-        >
-        <el-menu-item index="2" path="/home/agent-setting"
-          >Agent设置</el-menu-item
-        >
-        <el-menu-item index="3" path="/home/history">历史记录</el-menu-item>
+        <el-menu-item index="1">BrainStorm</el-menu-item>
+        <el-menu-item index="2">Agent设置</el-menu-item>
+        <el-menu-item index="3">历史记录</el-menu-item>
         <el-menu-item ref="userIconRef" @click="toggleUsercard">
           <el-icon>
             <User />

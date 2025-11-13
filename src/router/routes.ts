@@ -19,7 +19,7 @@ export const routes: RouteRecordRaw[] = [
     children: [
       {
         path: "brainstorm",
-        component: () => import("@/views/brainStorm/index.vue"),
+        component: () => import("@/views/brainstorm/index.vue"),
       },
       {
         path: "agent-settings",
