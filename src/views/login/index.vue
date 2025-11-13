@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { LoginForm } from "./types";
-import type { LoginCardExpose } from "@/component/logincard/types";
+import type { LoginCardExpose } from "@/components/logincard/types";
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuth } from "@/composables";
 import { ElMessage } from "element-plus";
 import type { LoginRequest, RegisterRequest } from "@/types/api/auth";
-import LoginCard from "@/component/logincard/index.vue";
+import LoginCard from "@/components/logincard/index.vue";
 
 const { login, register } = useAuth();
 
