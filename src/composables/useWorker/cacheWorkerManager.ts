@@ -2,37 +2,78 @@
 import { BaseWorkerManager } from "./baseWorkerManager.ts";
 import type { CacheMessage, CacheResponse } from "@/types/worker/cache.ts";
 
+// 单例模式：确保整个应用只有一个 Worker 实例
+let cacheWorkerManagerInstance: CacheWorkerManager | null = null;
+
 export class CacheWorkerManager extends BaseWorkerManager<
   CacheMessage,
   CacheResponse
 > {
-  constructor(workerPath: string = "@/workers/cache.worker.ts") {
+  constructor(workerPath: string = "../../workers/cache.worker.ts") {
     super(workerPath);
   }
 
-  protected handleMessage(response: CacheResponse): void {
-    const { type, key, data, exists } = response;
+  // 获取单例实例
+  static getInstance(
+    workerPath: string = "../../workers/cache.worker.ts",
+  ): CacheWorkerManager {
+    if (!cacheWorkerManagerInstance) {
+      cacheWorkerManagerInstance = new CacheWorkerManager(workerPath);
+    }
+    return cacheWorkerManagerInstance;
+  }
 
-    // 通过key关联Promise
-    if (key && this.pendingPromises.has(key)) {
+  protected handleMessage(response: CacheResponse): void {
+    const { type, key, data, exists, id, error } = response;
+
+    // 优先使用 id 匹配 Promise，如果没有 id 则使用 key（向后兼容）
+    const messageId = id || key;
+
+    if (!messageId) {
+      console.warn("响应缺少 id 和 key:", response);
+      return;
+    }
+
+    // 处理错误响应
+    if (type === "ERROR" || error) {
+      if (this.pendingPromises.has(messageId)) {
+        const { reject, timeoutId } = this.pendingPromises.get(messageId)!;
+        this.pendingPromises.delete(messageId);
+        clearTimeout(timeoutId);
+        reject(error || "未知错误");
+      }
+      this.error.value = error || "未知错误";
+      this.isLoading.value = false;
+      return;
+    }
+
+    // 通过 id 或 key 关联 Promise
+    if (this.pendingPromises.has(messageId)) {
       switch (type) {
         case "GET_COMPLETE":
-          this.resolvePromise(key, data);
+          this.resolvePromise(messageId, data);
           break;
 
         case "EXISTS_COMPLETE":
-          this.resolvePromise(key, exists);
+          this.resolvePromise(messageId, exists);
           break;
 
         case "SET_COMPLETE":
         case "DELETE_COMPLETE":
         case "CLEAR_COMPLETE":
-          this.resolvePromise(key, true);
+        case "BATCH_SET_COMPLETE":
+          this.resolvePromise(messageId, true);
+          break;
+
+        case "STATS_COMPLETE":
+          this.resolvePromise(messageId, data);
           break;
 
         default:
           console.warn("未知的响应类型:", type);
       }
+    } else {
+      console.warn(`未找到匹配的 Promise，messageId: ${messageId}`, response);
     }
 
     this.error.value = null;

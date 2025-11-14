@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authService } from "@/services";
 import type { LoginRequest, RegisterRequest, User } from "@/types/api/auth";
+import { CacheWorkerManager } from "@/composables/useWorker/cacheWorkerManager";
+import { UserCacheService } from "@/services/userCacheService";
 
 //认证状态管理
 export const useAuthStore = defineStore("auth", () => {
@@ -24,6 +26,22 @@ export const useAuthStore = defineStore("auth", () => {
 
       //持久化保存token
       localStorage.setItem("auth_token", token.value as string);
+
+      // 立即缓存用户信息，以便离线时使用
+      if (response.user?.id) {
+        try {
+          // 使用单例模式，确保使用同一个 Worker 实例
+          const cacheWorkerManager = CacheWorkerManager.getInstance();
+          const userCacheService = new UserCacheService(cacheWorkerManager);
+          await userCacheService.cacheUserInfo(response.user.id, {
+            ...response.user,
+            lastUpdated: Date.now(),
+          });
+        } catch (cacheErr) {
+          console.warn("登录后缓存用户信息失败:", cacheErr);
+          // 缓存失败不影响登录流程
+        }
+      }
 
       return response;
     } catch (error) {

@@ -4,12 +4,14 @@ import { User } from "@element-plus/icons-vue";
 import userCard from "@/components/usercard/index.vue";
 import { useProfileStore } from "@/stores/profile";
 import { useRouter } from "vue-router";
+import { useNetworkStatus } from "@/composables/useNetworkStatus";
 
 //取到路由器
 const router = useRouter();
 
-// 使用ProfileStore
+// 使用ProfileStore和网络状态
 const profileStore = useProfileStore();
+const { isOnline } = useNetworkStatus();
 
 // 控制用户卡片显示状态
 const showUserCard = ref(false);
@@ -24,8 +26,9 @@ const menuMap = new Map([
 
 // 显示/隐藏用户卡片 - 使用 Element Plus 的事件类型
 function toggleUsercard() {
-  // 如果是打开用户卡片，刷新用户信息
-  if (!showUserCard.value) {
+  // 如果是打开用户卡片，且在线时才刷新用户信息
+  // 离线时，usercard 组件会自己从缓存加载
+  if (!showUserCard.value && isOnline.value) {
     profileStore.refreshProfile();
   }
 

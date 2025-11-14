@@ -5,37 +5,99 @@ import {
   SwitchButton,
   Loading,
   Warning,
+  Collection,
+  Close,
 } from "@element-plus/icons-vue";
 import { markRaw } from "vue";
 import { onMounted, computed, ref } from "vue";
 import { useProfileStore } from "@/stores/profile";
+import { useAuthStore } from "@/stores/auth";
+import { useUserCache } from "@/composables/useUserCache";
 
-// 使用ProfileStore
+// 使用ProfileStore、AuthStore和UserCache
 const profileStore = useProfileStore();
+const authStore = useAuthStore();
+const {
+  userInfo: cachedUserInfo,
+  isLoading: cacheLoading,
+  error: cacheError,
+  isFromCache,
+  isOnline,
+  loadUserInfo,
+} = useUserCache();
 
-// 计算属性：处理用户信息，提供默认值
+// 统一的用户信息计算属性
 const userInfo = computed(() => {
-  if (!profileStore.user) {
-    return {
-      name: "加载中...",
-      email: "请稍候",
-      role: "用户",
-      avatar: "/logo.png",
-    };
+  // 定义默认用户信息
+  const defaultUser = {
+    name: "未知用户",
+    email: "未设置邮箱",
+    role: "普通用户",
+    avatar: "/logo.png",
+  };
+
+  // 优先使用缓存数据，回退到profileStore，最后回退到authStore
+  const dataSource =
+    cachedUserInfo.value || profileStore.user || authStore.user;
+
+  if (!dataSource || typeof dataSource !== "object") {
+    return defaultUser;
   }
 
+  // 类型安全访问
+  const userData = dataSource as any;
+
   return {
-    name: profileStore.user.username || "未知用户",
-    email: profileStore.user.email || "未设置邮箱",
-    role: profileStore.user.role || "普通用户",
-    avatar: profileStore.user.avatar || "/logo.png",
+    name: userData.username ?? defaultUser.name,
+    email: userData.email ?? defaultUser.email,
+    role: userData.role ?? defaultUser.role,
+    avatar: userData.avatar ?? defaultUser.avatar,
   };
 });
 
-// 组件挂载时获取用户信I
-onMounted(() => {
-  if (!profileStore.user) {
-    profileStore.fetchProfile();
+// 统一加载状态
+const isLoading = computed(() => cacheLoading.value || profileStore.loading);
+const error = computed(() => cacheError.value || profileStore.error);
+
+// 组件挂载时获取用户信息
+onMounted(async () => {
+  console.log("[usercard] onMounted 开始加载用户信息");
+  console.log("[usercard] cachedUserInfo:", cachedUserInfo.value);
+  console.log("[usercard] profileStore.user:", profileStore.user);
+  console.log("[usercard] authStore.user:", authStore.user);
+  console.log("[usercard] isOnline:", isOnline.value);
+
+  // 优先从缓存获取用户ID
+  const cachedUserId = cachedUserInfo.value?.id;
+
+  if (cachedUserId) {
+    // 如果有缓存，直接加载缓存数据
+    console.log("[usercard] 使用缓存的用户ID:", cachedUserId);
+    await loadUserInfo(cachedUserId);
+  } else {
+    // 尝试从各个 store 获取用户ID
+    const userId = profileStore.user?.id || authStore.user?.id;
+    console.log("[usercard] 从store获取用户ID:", userId);
+
+    if (userId) {
+      // 有用户ID，加载缓存（离线时也能从缓存加载）
+      await loadUserInfo(userId);
+    } else if (isOnline.value) {
+      // 在线且没有用户ID：从 API 获取
+      try {
+        await profileStore.fetchProfile();
+        if (profileStore.user?.id) {
+          await loadUserInfo(profileStore.user.id);
+        }
+      } catch (err) {
+        // API 失败时，尝试从缓存获取（可能之前有缓存但 userId 不匹配）
+        console.warn("[usercard] 从 API 获取用户信息失败，尝试从缓存获取");
+      }
+    } else {
+      // 离线且没有用户ID和缓存：显示错误
+      console.warn("[usercard] 离线且没有用户ID和缓存");
+      cacheError.value = "离线状态且无缓存数据";
+    }
   }
 });
 
@@ -62,11 +124,52 @@ const handleMenuClick = (action: string) => {
       break;
   }
 };
+
+// 安全的重试函数
+const handleRetry = async () => {
+  // 尝试从各个来源获取用户ID
+  const userId =
+    cachedUserInfo.value?.id || profileStore.user?.id || authStore.user?.id;
+
+  if (!userId) {
+    // 如果没有用户ID，尝试从 API 获取（仅在线时）
+    if (isOnline.value) {
+      try {
+        await profileStore.fetchProfile();
+        if (profileStore.user?.id) {
+          await loadUserInfo(profileStore.user.id);
+        }
+      } catch (err) {
+        console.error("重试获取用户信息失败:", err);
+      }
+    } else {
+      // 离线时，提示用户
+      cacheError.value = "离线状态，无法获取用户信息";
+    }
+    return;
+  }
+
+  // 有用户ID，直接重试加载
+  await loadUserInfo(userId);
+};
 </script>
 
 <template>
+  <!-- 状态指示器 -->
+  <div class="status-indicators">
+    <div v-if="!isOnline" class="offline-indicator">
+      <el-icon><Close /></el-icon>
+      <span>离线</span>
+    </div>
+
+    <div v-if="isFromCache && isOnline" class="cache-indicator">
+      <el-icon><Collection /></el-icon>
+      <span>缓存数据</span>
+    </div>
+  </div>
+
   <!-- 加载状态 -->
-  <el-card v-if="profileStore.loading" class="user-card">
+  <el-card v-if="isLoading" class="user-card">
     <div class="loading-container">
       <el-icon class="loading-icon">
         <Loading />
@@ -76,15 +179,13 @@ const handleMenuClick = (action: string) => {
   </el-card>
 
   <!-- 错误状态 -->
-  <el-card v-else-if="profileStore.error" class="user-card">
+  <el-card v-else-if="error" class="user-card">
     <div class="error-container">
       <el-icon class="error-icon">
         <Warning />
       </el-icon>
-      <span>{{ profileStore.error }}</span>
-      <el-button type="text" @click="profileStore.fetchProfile()"
-        >重试</el-button
-      >
+      <span>{{ error }}</span>
+      <el-button type="text" @click="handleRetry">重试</el-button>
     </div>
   </el-card>
 
@@ -122,6 +223,7 @@ const handleMenuClick = (action: string) => {
 <style lang="scss" scoped>
 .user-card {
   width: 35vw;
+  position: relative; // 为状态指示器定位
 
   :deep(.el-card__body) {
     padding: 0;
@@ -131,6 +233,38 @@ const handleMenuClick = (action: string) => {
     padding: 16px;
     border-bottom: 1px solid #f0f0f0;
   }
+}
+
+// 状态指示器样式
+.status-indicators {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+}
+
+.offline-indicator {
+  background: #f56c6c;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cache-indicator {
+  background: #67c23a;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .user-header {

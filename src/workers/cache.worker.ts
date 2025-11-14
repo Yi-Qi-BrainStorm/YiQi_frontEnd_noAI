@@ -15,7 +15,7 @@ class CacheWorker {
   }
 
   private handleMessage(message: CacheMessage) {
-    const { type, key, data, ttl } = message;
+    const { type, key, data, ttl, id } = message;
 
     try {
       let response: CacheResponse;
@@ -23,31 +23,31 @@ class CacheWorker {
       switch (type) {
         case "SET": {
           this.set(key, data, ttl);
-          response = { type: "SET_COMPLETE", key };
+          response = { type: "SET_COMPLETE", key, id };
           break;
         }
 
         case "GET": {
           const result = this.get(key);
-          response = { type: "GET_COMPLETE", key, data: result };
+          response = { type: "GET_COMPLETE", key, data: result, id };
           break;
         }
 
         case "DELETE": {
           this.delete(key);
-          response = { type: "DELETE_COMPLETE", key };
+          response = { type: "DELETE_COMPLETE", key, id };
           break;
         }
 
         case "CLEAR": {
           this.clear();
-          response = { type: "CLEAR_COMPLETE" };
+          response = { type: "CLEAR_COMPLETE", id };
           break;
         }
 
         case "EXISTS": {
           const exists = this.exists(key);
-          response = { type: "EXISTS_COMPLETE", key, exists };
+          response = { type: "EXISTS_COMPLETE", key, exists, id };
           break;
         }
 
@@ -56,14 +56,14 @@ class CacheWorker {
           const batchResult = this.setBatch(
             data as Array<{ key: string; data: any; ttl?: number }>,
           );
-          response = { type: "BATCH_SET_COMPLETE", key: batchResult };
+          response = { type: "BATCH_SET_COMPLETE", key: batchResult, id };
           break;
         }
 
         // 新增：统计功能
         case "STATS": {
           const stats = this.getStats();
-          response = { type: "STATS_COMPLETE", key, data: stats };
+          response = { type: "STATS_COMPLETE", key, data: stats, id };
           break;
         }
 
@@ -78,6 +78,7 @@ class CacheWorker {
       self.postMessage({
         type: "ERROR",
         error: errorMessage,
+        id, // 确保错误响应也包含 id
       });
     }
   }

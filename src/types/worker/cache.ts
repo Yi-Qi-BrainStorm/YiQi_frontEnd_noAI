@@ -4,6 +4,7 @@ export interface CacheMessage {
   key: string;
   data?: any;
   ttl?: number; // 过期时间(秒)
+  id?: string; // 消息 ID，用于匹配 Promise
 }
 
 export interface CacheResponse {
@@ -14,11 +15,13 @@ export interface CacheResponse {
     | "CLEAR_COMPLETE"
     | "EXISTS_COMPLETE"
     | "BATCH_SET_COMPLETE"
-    | "STATS_COMPLETE";
+    | "STATS_COMPLETE"
+    | "ERROR";
   key?: string;
   data?: any;
   exists?: boolean;
   error?: string;
+  id?: string; // 消息 ID，用于匹配 Promise
 }
 
 export interface CacheItem {
