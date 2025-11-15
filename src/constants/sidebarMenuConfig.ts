@@ -35,21 +35,17 @@ export const sidebarMenuConfigs = {
       icon: markRaw(Setting),
       title: "智能体设置",
       disabled: false,
+      path: "/home/agent-settings/agent-settings",
     },
     {
       index: "2",
       icon: markRaw(IconMenu),
       title: "角色管理",
       disabled: false,
+      path: "/home/agent-settings/role-management",
     },
     {
       index: "3",
-      icon: markRaw(Document),
-      title: "模板管理",
-      disabled: false,
-    },
-    {
-      index: "4",
       icon: markRaw(Setting),
       title: "系统设置",
       disabled: false,

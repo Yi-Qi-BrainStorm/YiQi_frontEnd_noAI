@@ -24,6 +24,18 @@ export const routes: RouteRecordRaw[] = [
       {
         path: "agent-settings",
         component: () => import("@/views/agentSettings/index.vue"),
+        children: [
+          {
+            path: "agent-settings",
+            component: () =>
+              import("@/views/agentSettings/components/agentSetting.vue"),
+          },
+          {
+            path: "role-management",
+            component: () =>
+              import("@/views/agentSettings/components/agentSetting.vue"),
+          },
+        ],
       },
       { path: "history", component: () => import("@/views/history/index.vue") },
     ],
