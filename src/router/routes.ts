@@ -33,7 +33,7 @@ export const routes: RouteRecordRaw[] = [
           {
             path: "role-management",
             component: () =>
-              import("@/views/agentSettings/components/agentSetting.vue"),
+              import("@/views/agentSettings/components/roleManagement.vue"),
           },
         ],
       },

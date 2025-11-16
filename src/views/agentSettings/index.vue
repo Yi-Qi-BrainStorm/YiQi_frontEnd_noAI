@@ -5,12 +5,14 @@
     @toggle-collapse="handleToggleCollapse"
     class="sidebar"
   />
+  <RouterView></RouterView>
 </template>
 
 <script lang="ts" setup>
 import { sidebarMenuConfigs } from "@/constants/sidebarMenuConfig";
 import SidebarMenu from "@/components/sidebarMenu/index.vue";
 import { useRouter } from "vue-router";
+import { onMounted } from "vue";
 
 const router = useRouter();
 
@@ -24,6 +26,11 @@ const handleMenuSelect = (index: string) => {
 const handleToggleCollapse = () => {
   console.log("切换折叠状态");
 };
+
+//默认打开第一级子路由
+onMounted(() => {
+  handleMenuSelect("1");
+});
 </script>
 
 <style lang="scss" scoped></style>
