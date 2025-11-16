@@ -1,11 +1,15 @@
 <template>
-  <SidebarMenu
-    :menu-items="sidebarMenuConfigs.agentSettings"
-    @select="handleMenuSelect"
-    @toggle-collapse="handleToggleCollapse"
-    class="sidebar"
-  />
-  <RouterView></RouterView>
+  <div class="agent-settings-container">
+    <SidebarMenu
+      :menu-items="sidebarMenuConfigs.agentSettings"
+      @select="handleMenuSelect"
+      @toggle-collapse="handleToggleCollapse"
+      class="sidebar"
+    />
+    <div class="content-area">
+      <RouterView></RouterView>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -33,4 +37,18 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.agent-settings-container {
+  @apply flex h-full;
+
+  .sidebar {
+    @apply flex-shrink-0;
+    width: 200px;
+  }
+
+  .content-area {
+    @apply flex-1 overflow-auto;
+    padding: 20px;
+  }
+}
+</style>

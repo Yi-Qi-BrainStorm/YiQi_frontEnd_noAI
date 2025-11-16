@@ -11,9 +11,7 @@ import TopNav from "@/components/topnav/index.vue";
 
     <!-- 主要内容区域 -->
     <main class="main-content">
-      <div class="sidebar-wrapper">
-        <RouterView />
-      </div>
+      <RouterView />
     </main>
   </div>
 </template>
@@ -41,30 +39,6 @@ import TopNav from "@/components/topnav/index.vue";
 .main-content {
   @apply flex flex-1 overflow-hidden relative;
   min-height: 0;
-
-  .sidebar-wrapper {
-    @apply flex-shrink-0 overflow-y-auto;
-    width: 200px;
-    @apply bg-white border-r border-gray-200;
-    transition: width 0.3s ease;
-
-    // 确保内部菜单正确显示
-    :deep(.el-menu-vertical) {
-      @apply h-full;
-      border-right: none;
-    }
-
-    // 处理折叠状态
-    &:has(.el-menu--collapse) {
-      width: 64px;
-    }
-
-    // 确保子页面内容正确显示
-    :deep(.el-radio-group) {
-      @apply p-3 border-b border-gray-200;
-      background: #fafafa;
-    }
-  }
 }
 
 // 响应式设计
@@ -73,19 +47,6 @@ import TopNav from "@/components/topnav/index.vue";
     // 移动端确保不出现滚动条问题
     height: 100vh;
     @apply overflow-hidden;
-  }
-
-  .sidebar-wrapper {
-    width: 180px;
-
-    &.mobile-collapsed {
-      width: 0;
-      @apply overflow-hidden;
-    }
-  }
-
-  .content-area {
-    @apply p-4;
   }
 }
 
@@ -106,10 +67,5 @@ import TopNav from "@/components/topnav/index.vue";
 // 移除可能的默认边距和内边距
 .home-container * {
   box-sizing: border-box;
-}
-
-// 添加平滑滚动
-.sidebar-wrapper {
-  scroll-behavior: smooth;
 }
 </style>
