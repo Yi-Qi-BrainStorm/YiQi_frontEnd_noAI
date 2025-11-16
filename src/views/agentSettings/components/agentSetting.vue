@@ -1,7 +1,9 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import AgentForm from "@/components/AgentForm/index.vue";
+</script>
 
 <template>
-  <h1>agentSetting</h1>
+  <AgentForm></AgentForm>
 </template>
 
 <style lang="scss" scoped></style>
