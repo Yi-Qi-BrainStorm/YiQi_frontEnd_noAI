@@ -50,11 +50,6 @@ import TopNav from "@/components/topnav/index.vue";
   }
 }
 
-// 当侧边栏折叠时的样式调整
-.sidebar-wrapper :deep(.el-menu--collapse) {
-  width: 64px;
-}
-
 // 深度选择器处理 Element Plus 组件样式
 :deep(.el-menu-item) {
   @apply transition-all duration-300;

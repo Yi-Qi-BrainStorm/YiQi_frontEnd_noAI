@@ -43,7 +43,9 @@ onMounted(() => {
 
   .sidebar {
     @apply flex-shrink-0;
-    width: 200px;
+    width: fit-content; // 改为 fit-content 或 min-content
+    min-width: 64px; // 设置最小宽度
+    max-width: 200px; // 设置最大宽度
   }
 
   .content-area {
