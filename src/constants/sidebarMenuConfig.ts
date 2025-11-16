@@ -8,21 +8,17 @@ export const sidebarMenuConfigs = {
       icon: markRaw(IconMenu),
       title: "头脑风暴",
       disabled: false,
+      path: "/home/brainstorm/brainstorm",
     },
     {
       index: "2",
       icon: markRaw(IconMenu),
       title: "方案生成",
       disabled: false,
+      path: "/home/brainstorm/solutiongenerator",
     },
     {
       index: "3",
-      icon: markRaw(Document),
-      title: "模板库",
-      disabled: true,
-    },
-    {
-      index: "4",
       icon: markRaw(Setting),
       title: "设置",
       disabled: false,

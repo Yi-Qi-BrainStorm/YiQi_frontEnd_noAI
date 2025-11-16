@@ -1,10 +1,4 @@
-<script lang="ts" setup>
-import { onMounted } from "vue";
-
-onMounted(() => {
-  console.log("as mounted");
-});
-</script>
+<script lang="ts" setup></script>
 
 <template>
   <h1>agentSetting</h1>
