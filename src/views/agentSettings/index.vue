@@ -4,7 +4,6 @@
       :menu-items="sidebarMenuConfigs.agentSettings"
       @select="handleMenuSelect"
       @toggle-collapse="handleToggleCollapse"
-      class="sidebar"
     />
     <div class="content-area">
       <RouterView></RouterView>
@@ -33,7 +32,10 @@ const handleToggleCollapse = () => {
 
 //默认打开第一级子路由
 onMounted(() => {
-  handleMenuSelect("1");
+  const currentPath = router.currentRoute.value.path;
+  if (currentPath === "/home/agent-settings") {
+    handleMenuSelect("1");
+  }
 });
 </script>
 
