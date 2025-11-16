@@ -8,3 +8,6 @@ export { profileService } from "./profileService";
 
 //user离线存储服务
 export { UserCacheService } from "./userCacheService";
+
+//agent存储服务
+export { AgentStorageService } from "./agent/storageService";

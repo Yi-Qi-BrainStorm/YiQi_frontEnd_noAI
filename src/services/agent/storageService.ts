@@ -62,11 +62,6 @@ export class AgentStorageService {
     try {
       const agents = this.loadAgents();
 
-      // 检查名称是否重复
-      if (agents.some((agent) => agent.name === formData.name.trim())) {
-        throw new Error("Agent名称已存在");
-      }
-
       const newAgent: AgentConfig = {
         id: this.generateId(),
         name: formData.name.trim(),
@@ -74,7 +69,6 @@ export class AgentStorageService {
         systemPrompt: formData.systemPrompt.trim(),
         model: formData.model,
         temperature: formData.temperature,
-        isDefault: agents.length === 0, // 第一个agent设为默认
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -100,28 +94,6 @@ export class AgentStorageService {
     }
   }
 
-  // READ: 根据名称获取agent
-  static getAgentByName(name: string): AgentConfig | null {
-    try {
-      const agents = this.loadAgents();
-      return agents.find((agent) => agent.name === name.trim()) || null;
-    } catch (error) {
-      console.error("获取agent失败:", error);
-      return null;
-    }
-  }
-
-  // READ: 获取默认agent
-  static getDefaultAgent(): AgentConfig | null {
-    try {
-      const agents = this.loadAgents();
-      return agents.find((agent) => agent.isDefault) || null;
-    } catch (error) {
-      console.error("获取默认agent失败:", error);
-      return null;
-    }
-  }
-
   // UPDATE: 更新单个agent
   static updateAgent(id: string, formData: AgentFormData): AgentConfig {
     try {
@@ -130,14 +102,6 @@ export class AgentStorageService {
 
       if (index === -1) {
         throw new Error("Agent不存在");
-      }
-
-      // 检查名称是否与其他agent重复
-      const duplicateAgent = agents.find(
-        (agent) => agent.id !== id && agent.name === formData.name.trim(),
-      );
-      if (duplicateAgent) {
-        throw new Error("Agent名称已存在");
       }
 
       // 使用非空断言，告诉TypeScript这里一定有值
@@ -150,7 +114,6 @@ export class AgentStorageService {
         systemPrompt: formData.systemPrompt.trim(),
         model: formData.model,
         temperature: formData.temperature,
-        isDefault: existingAgent.isDefault,
         createdAt: existingAgent.createdAt,
         updatedAt: new Date().toISOString(),
       };
@@ -174,23 +137,7 @@ export class AgentStorageService {
         throw new Error("Agent不存在");
       }
 
-      // 不允许删除默认agent
-      if (agentToDelete.isDefault) {
-        throw new Error("不能删除默认Agent");
-      }
-
       const filteredAgents = agents.filter((agent) => agent.id !== id);
-
-      // 如果删除后没有默认agent了，设置第一个为默认
-      if (
-        filteredAgents.length > 0 &&
-        !filteredAgents.some((agent) => agent.isDefault)
-      ) {
-        const firstAgent = filteredAgents[0]!; // 非空断言
-        firstAgent.isDefault = true;
-        firstAgent.updatedAt = new Date().toISOString();
-      }
-
       this.saveAgents(filteredAgents);
     } catch (error) {
       console.error("删除agent失败:", error);
@@ -209,7 +156,6 @@ export class AgentStorageService {
           "你是一个有帮助的AI助手，请用简洁、准确的方式回答问题。保持友好和专业的态度。",
         model: "gpt-3.5-turbo",
         temperature: 0.7,
-        isDefault: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
