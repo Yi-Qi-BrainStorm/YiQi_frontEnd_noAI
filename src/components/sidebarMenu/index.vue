@@ -101,11 +101,16 @@ const toggleCollapse = () => {
 </script>
 
 <style scoped>
+.el-menu-vertical:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
+}
+
 .el-menu-vertical {
   padding-top: 10px;
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 64px;
   height: 100%;
   background: #ffffff;
   border-right: 1px solid #e4e7ed;

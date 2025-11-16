@@ -29,7 +29,7 @@ export const sidebarMenuConfigs = {
     {
       index: "1",
       icon: markRaw(Setting),
-      title: "智能体设置",
+      title: "智能体",
       disabled: false,
       path: "/home/agent-settings/agent-settings",
     },
@@ -43,7 +43,7 @@ export const sidebarMenuConfigs = {
     {
       index: "3",
       icon: markRaw(Setting),
-      title: "系统设置",
+      title: "设置",
       disabled: false,
       isLower: true,
     },

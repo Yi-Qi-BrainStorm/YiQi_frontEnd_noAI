@@ -41,13 +41,6 @@ onMounted(() => {
 .agent-settings-container {
   @apply flex h-full;
 
-  .sidebar {
-    @apply flex-shrink-0;
-    width: fit-content; // 改为 fit-content 或 min-content
-    min-width: 64px; // 设置最小宽度
-    max-width: 200px; // 设置最大宽度
-  }
-
   .content-area {
     @apply flex-1 overflow-auto;
     padding: 20px;
