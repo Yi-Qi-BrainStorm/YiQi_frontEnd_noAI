@@ -5,3 +5,6 @@ export { default as api, ApiService } from "./api";
 export { authService } from "./authService";
 
 export { profileService } from "./profileService";
+
+//user离线存储服务
+export { UserCacheService } from "./userCacheService";

@@ -1,0 +1,218 @@
+// services/agent/storageService.ts
+import { useAuthStore } from "@/stores/auth";
+import type { AgentConfig } from "@/types/agent/agent";
+import type { AgentFormData } from "@/types/agent/form";
+
+export class AgentStorageService {
+  private static readonly BASE_STORAGE_KEY = "yiqi_agents";
+
+  // 获取当前用户的存储key
+  private static getUserStorageKey(): string {
+    const authStore = useAuthStore();
+    const userId = authStore.user?.id;
+
+    if (!userId) {
+      console.warn("用户未登录，使用默认存储key");
+      return this.BASE_STORAGE_KEY;
+    }
+
+    return `${this.BASE_STORAGE_KEY}_${userId}`;
+  }
+
+  private static generateId(): string {
+    // 使用 BigInt + 随机数确保高精度时间戳和随机性的结合
+    const timestamp = Date.now().toString(36);
+    // Math.random().toString(36) 生成的字符串可能在不同平台上长度不一致，
+    // 优化为更标准的随机数生成。
+    const randomSuffix = Math.random().toString(36).substring(2, 11);
+
+    // 拼接格式：agent_时间戳(36进制)_随机数(36进制)
+    return `agent_${timestamp}_${randomSuffix}`;
+  }
+
+  // ========== 基础存储操作 ==========
+
+  // 保存agents到localStorage
+  static saveAgents(agents: AgentConfig[]): void {
+    try {
+      const storageKey = this.getUserStorageKey();
+      localStorage.setItem(storageKey, JSON.stringify(agents));
+    } catch (error) {
+      console.error("保存agents失败:", error);
+      throw new Error("数据保存失败");
+    }
+  }
+
+  // 从localStorage加载agents
+  static loadAgents(): AgentConfig[] {
+    try {
+      const storageKey = this.getUserStorageKey();
+      const data = localStorage.getItem(storageKey);
+      return data ? JSON.parse(data) : this.getDefaultAgents();
+    } catch (error) {
+      console.error("加载agents失败:", error);
+      return this.getDefaultAgents();
+    }
+  }
+
+  // ========== 单个agent操作 - CRUD ==========
+
+  // CREATE: 创建单个agent
+  static createAgent(formData: AgentFormData): AgentConfig {
+    try {
+      const agents = this.loadAgents();
+
+      // 检查名称是否重复
+      if (agents.some((agent) => agent.name === formData.name.trim())) {
+        throw new Error("Agent名称已存在");
+      }
+
+      const newAgent: AgentConfig = {
+        id: this.generateId(),
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        systemPrompt: formData.systemPrompt.trim(),
+        model: formData.model,
+        temperature: formData.temperature,
+        isDefault: agents.length === 0, // 第一个agent设为默认
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      agents.push(newAgent);
+      this.saveAgents(agents);
+
+      return newAgent;
+    } catch (error) {
+      console.error("创建agent失败:", error);
+      throw error;
+    }
+  }
+
+  // READ: 根据ID获取单个agent
+  static getAgentById(id: string): AgentConfig | null {
+    try {
+      const agents = this.loadAgents();
+      return agents.find((agent) => agent.id === id) || null;
+    } catch (error) {
+      console.error("获取agent失败:", error);
+      return null;
+    }
+  }
+
+  // READ: 根据名称获取agent
+  static getAgentByName(name: string): AgentConfig | null {
+    try {
+      const agents = this.loadAgents();
+      return agents.find((agent) => agent.name === name.trim()) || null;
+    } catch (error) {
+      console.error("获取agent失败:", error);
+      return null;
+    }
+  }
+
+  // READ: 获取默认agent
+  static getDefaultAgent(): AgentConfig | null {
+    try {
+      const agents = this.loadAgents();
+      return agents.find((agent) => agent.isDefault) || null;
+    } catch (error) {
+      console.error("获取默认agent失败:", error);
+      return null;
+    }
+  }
+
+  // UPDATE: 更新单个agent
+  static updateAgent(id: string, formData: AgentFormData): AgentConfig {
+    try {
+      const agents = this.loadAgents();
+      const index = agents.findIndex((agent) => agent.id === id);
+
+      if (index === -1) {
+        throw new Error("Agent不存在");
+      }
+
+      // 检查名称是否与其他agent重复
+      const duplicateAgent = agents.find(
+        (agent) => agent.id !== id && agent.name === formData.name.trim(),
+      );
+      if (duplicateAgent) {
+        throw new Error("Agent名称已存在");
+      }
+
+      // 使用非空断言，告诉TypeScript这里一定有值
+      const existingAgent = agents[index]!;
+
+      const updatedAgent: AgentConfig = {
+        id: existingAgent.id,
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        systemPrompt: formData.systemPrompt.trim(),
+        model: formData.model,
+        temperature: formData.temperature,
+        isDefault: existingAgent.isDefault,
+        createdAt: existingAgent.createdAt,
+        updatedAt: new Date().toISOString(),
+      };
+      agents[index] = updatedAgent;
+      this.saveAgents(agents);
+
+      return agents[index];
+    } catch (error) {
+      console.error("更新agent失败:", error);
+      throw error;
+    }
+  }
+
+  // DELETE: 删除单个agent
+  static deleteAgent(id: string): void {
+    try {
+      const agents = this.loadAgents();
+      const agentToDelete = agents.find((agent) => agent.id === id);
+
+      if (!agentToDelete) {
+        throw new Error("Agent不存在");
+      }
+
+      // 不允许删除默认agent
+      if (agentToDelete.isDefault) {
+        throw new Error("不能删除默认Agent");
+      }
+
+      const filteredAgents = agents.filter((agent) => agent.id !== id);
+
+      // 如果删除后没有默认agent了，设置第一个为默认
+      if (
+        filteredAgents.length > 0 &&
+        !filteredAgents.some((agent) => agent.isDefault)
+      ) {
+        const firstAgent = filteredAgents[0]!; // 非空断言
+        firstAgent.isDefault = true;
+        firstAgent.updatedAt = new Date().toISOString();
+      }
+
+      this.saveAgents(filteredAgents);
+    } catch (error) {
+      console.error("删除agent失败:", error);
+      throw error;
+    }
+  }
+
+  // 获取默认agents
+  static getDefaultAgents(): AgentConfig[] {
+    return [
+      {
+        id: "default-assistant",
+        name: "AI助手",
+        description: "通用的AI助手，适合各种日常对话",
+        systemPrompt:
+          "你是一个有帮助的AI助手，请用简洁、准确的方式回答问题。保持友好和专业的态度。",
+        model: "gpt-3.5-turbo",
+        temperature: 0.7,
+        isDefault: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+  }
+}
