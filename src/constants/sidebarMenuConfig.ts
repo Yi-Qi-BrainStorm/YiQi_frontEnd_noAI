@@ -54,18 +54,21 @@ export const sidebarMenuConfigs = {
       icon: markRaw(Document),
       title: "历史记录",
       disabled: false,
+      path: "/home/history/history",
     },
     {
       index: "2",
       icon: markRaw(IconMenu),
       title: "收藏",
       disabled: false,
+      path: "/home/history/favorite",
     },
     {
       index: "3",
       icon: markRaw(Document),
       title: "导出记录",
       disabled: false,
+      path: "/home/history/record",
     },
     {
       index: "4",

@@ -29,7 +29,7 @@ export const routes: RouteRecordRaw[] = [
           {
             path: "solutiongenerator",
             component: () =>
-              import("@/views/brainstorm/components/SolutionGenerator.vue"),
+              import("@/views/brainstorm/components/solutionGenerator.vue"),
           },
         ],
       },
@@ -49,7 +49,24 @@ export const routes: RouteRecordRaw[] = [
           },
         ],
       },
-      { path: "history", component: () => import("@/views/history/index.vue") },
+      {
+        path: "history",
+        component: () => import("@/views/history/index.vue"),
+        children: [
+          {
+            path: "history",
+            component: () => import("@/views/history/components/history.vue"),
+          },
+          {
+            path: "favorite",
+            component: () => import("@/views/history/components/favorite.vue"),
+          },
+          {
+            path: "record",
+            component: () => import("@/views/history/components/record.vue"),
+          },
+        ],
+      },
     ],
   },
 ];
