@@ -41,7 +41,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .agent-settings-container {
-  @apply flex h-full;
+  @apply flex h-full w-full;
 
   .content-area {
     @apply flex-1 overflow-auto;
