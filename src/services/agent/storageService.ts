@@ -44,14 +44,19 @@ export class AgentStorageService {
   }
 
   // 从localStorage加载agents
-  static loadAgents(): AgentConfig[] {
+  static loadAgents(options?: { fallbackToDefault?: boolean }): AgentConfig[] {
+    const shouldFallback = options?.fallbackToDefault ?? true;
     try {
       const storageKey = this.getUserStorageKey();
       const data = localStorage.getItem(storageKey);
-      return data ? JSON.parse(data) : this.getDefaultAgents();
+      const parsed = data?.length ? JSON.parse(data) : null;
+      if (parsed?.length) {
+        return parsed;
+      }
+      return shouldFallback ? this.getDefaultAgents() : [];
     } catch (error) {
       console.error("加载agents失败:", error);
-      return this.getDefaultAgents();
+      return shouldFallback ? this.getDefaultAgents() : [];
     }
   }
 
@@ -60,7 +65,7 @@ export class AgentStorageService {
   // CREATE: 创建单个agent
   static createAgent(formData: AgentFormData): AgentConfig {
     try {
-      const agents = this.loadAgents();
+      const agents = this.loadAgents({ fallbackToDefault: false });
 
       const newAgent: AgentConfig = {
         id: this.generateId(),
@@ -86,7 +91,7 @@ export class AgentStorageService {
   // READ: 根据ID获取单个agent
   static getAgentById(id: string): AgentConfig | null {
     try {
-      const agents = this.loadAgents();
+      const agents = this.loadAgents({ fallbackToDefault: false });
       return agents.find((agent) => agent.id === id) || null;
     } catch (error) {
       console.error("获取agent失败:", error);
@@ -97,7 +102,7 @@ export class AgentStorageService {
   // UPDATE: 更新单个agent
   static updateAgent(id: string, formData: AgentFormData): AgentConfig {
     try {
-      const agents = this.loadAgents();
+      const agents = this.loadAgents({ fallbackToDefault: false });
       const index = agents.findIndex((agent) => agent.id === id);
 
       if (index === -1) {
@@ -154,7 +159,7 @@ export class AgentStorageService {
         description: "通用的AI助手，适合各种日常对话",
         systemPrompt:
           "你是一个有帮助的AI助手，请用简洁、准确的方式回答问题。保持友好和专业的态度。",
-        model: "gpt-3.5-turbo",
+        model: "deepseek/deepseek-chat-v3-0324:free",
         temperature: 0.7,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
