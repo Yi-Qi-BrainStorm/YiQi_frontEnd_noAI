@@ -4,17 +4,28 @@ import type { AgentConfig } from "@/types/agent/agent";
 import type { AgentFormData } from "@/types/agent/form";
 import { ref, computed } from "vue";
 
+let initialized = false;
+
 export const useAgentStore = defineStore("agent", () => {
   const agents = ref<AgentConfig[]>([]);
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
   const agentNumber = computed(() => agents.value.length);
 
+  const ensureInitialized = async () => {
+    if (!initialized) {
+      await initializeAgents();
+      initialized = true;
+    }
+  };
+
+  ensureInitialized();
+
   // 初始化加载
-  const initializeAgents = (): void => {
+  const initializeAgents = async (): Promise<void> => {
     loading.value = true;
     try {
-      agents.value = AgentStorageService.loadAgents();
+      agents.value = await AgentStorageService.loadAgents();
       error.value = null;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "初始化失败";
@@ -73,7 +84,6 @@ export const useAgentStore = defineStore("agent", () => {
     loading,
     error,
     agentNumber,
-    initializeAgents,
     getAgentById,
     createAgent,
     updateAgent,

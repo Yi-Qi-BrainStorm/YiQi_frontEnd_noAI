@@ -9,13 +9,6 @@ export interface AgentConfig {
   createdAt: string; // 创建时间
   updatedAt: string; // 更新时间
 }
-
-export interface AgentModel {
-  id: string;
-  name: string;
-  description: string;
-}
-
 export const DEFAULT_AGENT_CONFIG: Partial<AgentConfig> = {
   name: "",
   description: "",
@@ -23,17 +16,3 @@ export const DEFAULT_AGENT_CONFIG: Partial<AgentConfig> = {
   model: "gpt-3.5-turbo",
   temperature: 0.7,
 };
-
-// 预定义的常用模型
-export const AGENT_MODELS: AgentModel[] = [
-  {
-    id: "gpt-3.5-turbo",
-    name: "GPT-3.5 Turbo",
-    description: "快速响应，成本较低",
-  },
-  {
-    id: "gpt-4",
-    name: "GPT-4",
-    description: "更强的推理能力",
-  },
-];
