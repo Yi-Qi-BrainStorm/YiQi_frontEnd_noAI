@@ -106,7 +106,7 @@
                   :icon="action.icon"
                   :disabled="action.disabled ? action.disabled(row) : false"
                   size="small"
-                  @click.stop="action.onClick(row, startIndex + index)"
+                  @click="action.onClick(row, startIndex + index)"
                 >
                   {{ action.label }}
                 </el-button>
