@@ -112,6 +112,12 @@ export function useChat(agent: AgentConfig) {
           agentId: agent.id,
           sessionId: sessionId.value,
           message: content,
+          agentConfig: {
+            name: agent.name,
+            model: agent.model,
+            temperature: agent.temperature,
+            systemPrompt: agent.systemPrompt,
+          },
           stream: true,
         },
         // onChunk

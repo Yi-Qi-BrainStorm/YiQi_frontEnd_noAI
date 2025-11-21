@@ -22,6 +22,7 @@ export class ChatService {
       agentId: request.agentId,
       sessionId: request.sessionId,
       message: request.message,
+      agentConfig: request.agentConfig,
       stream: false,
     });
   }
@@ -45,6 +46,8 @@ export class ChatService {
       agentId: request.agentId,
       sessionId: request.sessionId,
       message: request.message,
+      // 将 agentConfig 序列化为 JSON 字符串
+      agentConfig: JSON.stringify(request.agentConfig),
     });
 
     // 创建 EventSource 连接

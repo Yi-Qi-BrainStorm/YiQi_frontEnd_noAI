@@ -17,7 +17,7 @@
             v-for="option in modelOptions"
             :key="option.value"
             :label="option.label"
-            :value="option.value"
+            :value="option.label"
           />
         </el-select>
       </el-form-item>

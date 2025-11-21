@@ -26,9 +26,16 @@ export interface ChatSession {
 
 // 发送消息请求
 export interface SendMessageRequest {
-  agentId: string; // Agent ID
+  agentId: string; // Agent ID（用于标识会话）
   sessionId: string; // 会话 ID
   message: string; // 用户消息
+  agentConfig: {
+    // Agent 配置（完整传递给后端）
+    name: string;
+    model: string;
+    temperature: number;
+    systemPrompt: string;
+  };
   stream?: boolean; // 是否流式响应
 }
 

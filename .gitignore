@@ -23,6 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 
-todo.md
-src/components/VirtualTable/README.md
-IMPLEMENTATION_GUIDE.md
+docs
