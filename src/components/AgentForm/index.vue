@@ -56,11 +56,18 @@ import { useRouter, useRoute } from "vue-router";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { useAgentStore } from "@/stores/agent/index.ts";
 import type { AgentFormData } from "@/types/agent/form";
+import type { AgentConfig } from "@/types/agent/agent";
 import { getModelOptions } from "@/constants/model";
 
 const router = useRouter();
 const route = useRoute();
 const agentStore = useAgentStore();
+
+// Emits
+const emit = defineEmits<{
+  (e: "save-success", agent: AgentConfig): void;
+  (e: "cancel"): void;
+}>();
 
 const formRef = ref<FormInstance>();
 const submitting = ref(false);
@@ -86,7 +93,7 @@ const rules: FormRules = {
   model: [{ required: true, message: "请选择模型", trigger: "change" }],
   systemPrompt: [
     { required: true, message: "请输入系统提示词", trigger: "blur" },
-    { min: 10, message: "系统提示词至少 10 个字符", trigger: "blur" },
+    { min: 5, message: "系统提示词至少 5 个字符", trigger: "blur" },
   ],
 };
 
@@ -131,18 +138,20 @@ const onSubmit = async () => {
       temperature: form.temperature / 50,
     };
 
+    let savedAgent: AgentConfig;
+
     if (isEditMode.value && editingAgentId.value) {
       // 编辑模式
-      agentStore.updateAgent(editingAgentId.value, formData);
+      savedAgent = agentStore.updateAgent(editingAgentId.value, formData);
       ElMessage.success("更新成功");
     } else {
       // 创建模式
-      agentStore.createAgent(formData);
+      savedAgent = agentStore.createAgent(formData);
       ElMessage.success("创建成功");
     }
 
-    // 跳转到角色管理页面
-    router.push("/home/agent-settings/role-management");
+    // 触发保存成功事件，传递保存的 Agent
+    emit("save-success", savedAgent);
   } catch (error) {
     console.error("表单验证失败:", error);
   } finally {
@@ -152,6 +161,7 @@ const onSubmit = async () => {
 
 // 取消操作
 const handleCancel = () => {
+  emit("cancel");
   router.push("/home/agent-settings/role-management");
 };
 
