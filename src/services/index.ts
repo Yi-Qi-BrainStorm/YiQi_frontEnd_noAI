@@ -11,3 +11,6 @@ export { UserCacheService } from "./userCacheService";
 
 //agent存储服务
 export { AgentStorageService } from "./agent/storageService";
+
+//chat服务
+export { ChatService } from "./chatService";

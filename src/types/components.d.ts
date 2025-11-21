@@ -12,6 +12,7 @@ export {};
 declare module 'vue' {
   export interface GlobalComponents {
     AgentForm: typeof import('./../components/AgentForm/index.vue')['default']
+    ChatPanel: typeof import('./../components/ChatPanel/index.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
