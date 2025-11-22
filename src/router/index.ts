@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { routes } from "./routes";
 import { useAuth } from "@/composables";
+import { useAgentStore } from "@/stores/agent";
 
 // 2. 创建路由实例
 const router = createRouter({
@@ -22,6 +23,11 @@ router.beforeEach(async (to, _, next) => {
       const redirect = encodeURIComponent(to.fullPath);
       return next({ path: "/login", query: { redirect } });
     }
+
+    // 用户已登录，初始化 agentStore（确保 authStore.user 已恢复）
+    const agentStore = useAgentStore();
+    await agentStore.initializeAgents();
+
     return next();
   }
 
@@ -29,6 +35,11 @@ router.beforeEach(async (to, _, next) => {
   if (to.path === "/login" && token) {
     try {
       await check();
+
+      // 登录成功后初始化 agentStore
+      const agentStore = useAgentStore();
+      await agentStore.initializeAgents();
+
       const target = (to.query.redirect as string) || "/home";
       return next(target);
     } catch (error) {

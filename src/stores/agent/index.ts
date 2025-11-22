@@ -31,14 +31,8 @@ export const useAgentStore = defineStore("agent", () => {
     }
   };
 
-  // 自动初始化（仅首次）
-  const ensureInitialized = async () => {
-    if (!initialized) {
-      await initializeAgents();
-    }
-  };
-
-  ensureInitialized();
+  // 移除自动初始化，改为手动初始化
+  // 原因：自动初始化时 authStore.user 可能还未恢复，导致使用错误的 storage key
 
   const getAgentById = (id: string): AgentConfig | null => {
     return AgentStorageService.getAgentById(id);
