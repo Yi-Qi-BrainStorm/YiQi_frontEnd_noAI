@@ -44,8 +44,7 @@ export class AgentStorageService {
   }
 
   // 从localStorage加载agents
-  static loadAgents(options?: { fallbackToDefault?: boolean }): AgentConfig[] {
-    const shouldFallback = options?.fallbackToDefault ?? true;
+  static loadAgents(): AgentConfig[] {
     try {
       const storageKey = this.getUserStorageKey();
       const data = localStorage.getItem(storageKey);
@@ -53,10 +52,10 @@ export class AgentStorageService {
       if (parsed?.length) {
         return parsed;
       }
-      return shouldFallback ? this.getDefaultAgents() : [];
+      return [];
     } catch (error) {
       console.error("加载agents失败:", error);
-      return shouldFallback ? this.getDefaultAgents() : [];
+      return [];
     }
   }
 
@@ -65,7 +64,7 @@ export class AgentStorageService {
   // CREATE: 创建单个agent
   static createAgent(formData: AgentFormData): AgentConfig {
     try {
-      const agents = this.loadAgents({ fallbackToDefault: false });
+      const agents = this.loadAgents();
 
       const newAgent: AgentConfig = {
         id: this.generateId(),
@@ -91,7 +90,7 @@ export class AgentStorageService {
   // READ: 根据ID获取单个agent
   static getAgentById(id: string): AgentConfig | null {
     try {
-      const agents = this.loadAgents({ fallbackToDefault: false });
+      const agents = this.loadAgents();
       return agents.find((agent) => agent.id === id) || null;
     } catch (error) {
       console.error("获取agent失败:", error);
@@ -102,7 +101,7 @@ export class AgentStorageService {
   // UPDATE: 更新单个agent
   static updateAgent(id: string, formData: AgentFormData): AgentConfig {
     try {
-      const agents = this.loadAgents({ fallbackToDefault: false });
+      const agents = this.loadAgents();
       const index = agents.findIndex((agent) => agent.id === id);
 
       if (index === -1) {
@@ -148,22 +147,5 @@ export class AgentStorageService {
       console.error("删除agent失败:", error);
       throw error;
     }
-  }
-
-  // 获取默认agents
-  static getDefaultAgents(): AgentConfig[] {
-    return [
-      {
-        id: "default-assistant",
-        name: "AI助手",
-        description: "通用的AI助手，适合各种日常对话",
-        systemPrompt:
-          "你是一个有帮助的AI助手，请用简洁、准确的方式回答问题。保持友好和专业的态度。",
-        model: "deepseek/deepseek-chat-v3-0324:free",
-        temperature: 0.7,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    ];
   }
 }
