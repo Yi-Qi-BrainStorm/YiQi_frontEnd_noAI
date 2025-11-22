@@ -22,7 +22,16 @@
         </el-select>
       </el-form-item>
       <el-form-item label="temperature" prop="temperature">
-        <el-slider v-model="form.temperature" :format-tooltip="formatTooltip" />
+        <el-slider
+          v-model="form.temperature"
+          :min="0"
+          :max="100"
+          :step="1"
+          :format-tooltip="formatTooltip"
+        />
+        <span class="temperature-hint"
+          >当前值: {{ (form.temperature / 100).toFixed(2) }}</span
+        >
       </el-form-item>
       <el-form-item label="系统提示词" prop="systemPrompt">
         <el-input
@@ -100,9 +109,9 @@ const rules: FormRules = {
 // 是否为编辑模式
 const isEditMode = computed(() => !!editingAgentId.value);
 
-// 格式化 tooltip
+// 格式化 tooltip（滑块值 0-100 → 显示 0-1）
 const formatTooltip = (val: number) => {
-  return val / 50;
+  return (val / 100).toFixed(2);
 };
 
 // 加载编辑数据
@@ -116,7 +125,8 @@ const loadEditData = () => {
       form.description = agent.description;
       form.systemPrompt = agent.systemPrompt;
       form.model = agent.model;
-      form.temperature = agent.temperature * 50; // 转换回滑块值
+      // ✅ 修复：将 0-1 的值转换为 0-100 的滑块值
+      form.temperature = agent.temperature * 100;
     } else {
       ElMessage.error("未找到该 Agent");
       router.push("/home/agent-settings/role-management");
@@ -132,10 +142,10 @@ const onSubmit = async () => {
     await formRef.value.validate();
     submitting.value = true;
 
-    // 转换 temperature 值
+    // ✅ 修复：将滑块值 0-100 转换为 AI 模型要求的 0-1
     const formData: AgentFormData = {
       ...form,
-      temperature: form.temperature / 50,
+      temperature: form.temperature / 100,
     };
 
     let savedAgent: AgentConfig;
@@ -180,6 +190,11 @@ onMounted(() => {
   }
   .el-form {
     width: 550px;
+
+    .temperature-hint {
+      @apply text-sm text-gray-500 mt-2 block;
+    }
+
     .el-button-container {
       :deep(.el-form-item__content) {
         @apply flex justify-center;
