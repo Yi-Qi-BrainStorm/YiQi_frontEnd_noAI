@@ -12,27 +12,33 @@ export const useAgentStore = defineStore("agent", () => {
   const error = ref<string | null>(null);
   const agentNumber = computed(() => agents.value.length);
 
-  const ensureInitialized = async () => {
-    if (!initialized) {
-      await initializeAgents();
-      initialized = true;
+  // 初始化加载（支持强制刷新）
+  const initializeAgents = async (force: boolean = false): Promise<void> => {
+    // 如果已初始化且不是强制刷新，则跳过
+    if (initialized && !force) {
+      return;
     }
-  };
 
-  ensureInitialized();
-
-  // 初始化加载
-  const initializeAgents = async (): Promise<void> => {
     loading.value = true;
     try {
       agents.value = await AgentStorageService.loadAgents();
       error.value = null;
+      initialized = true;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "初始化失败";
     } finally {
       loading.value = false;
     }
   };
+
+  // 自动初始化（仅首次）
+  const ensureInitialized = async () => {
+    if (!initialized) {
+      await initializeAgents();
+    }
+  };
+
+  ensureInitialized();
 
   const getAgentById = (id: string): AgentConfig | null => {
     return AgentStorageService.getAgentById(id);
@@ -84,6 +90,7 @@ export const useAgentStore = defineStore("agent", () => {
     loading,
     error,
     agentNumber,
+    initializeAgents, // 暴露初始化方法
     getAgentById,
     createAgent,
     updateAgent,

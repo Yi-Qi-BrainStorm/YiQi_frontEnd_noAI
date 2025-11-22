@@ -228,9 +228,12 @@ function calculateTableHeight() {
   tableHeight.value = windowHeight - 200;
 }
 
-onMounted(() => {
+onMounted(async () => {
   calculateTableHeight();
   window.addEventListener("resize", calculateTableHeight);
+
+  // 组件挂载时强制重新加载 agents 数据
+  await agentStore.initializeAgents(true);
 });
 
 // 清理
