@@ -41,6 +41,9 @@ export class ChatService {
     onError?: (error: Error) => void,
     onComplete?: () => void,
   ): EventSource {
+    // 获取 token
+    const token = localStorage.getItem("auth_token");
+
     // 构建 URL 参数
     const params = new URLSearchParams({
       agentId: request.agentId,
@@ -49,6 +52,11 @@ export class ChatService {
       // 将 agentConfig 序列化为 JSON 字符串
       agentConfig: JSON.stringify(request.agentConfig),
     });
+
+    // 如果有 token，添加到 URL 参数中
+    if (token) {
+      params.append("token", token);
+    }
 
     // 创建 EventSource 连接
     const eventSource = new EventSource(
