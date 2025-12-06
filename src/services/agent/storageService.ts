@@ -1,5 +1,4 @@
 // services/agent/storageService.ts
-import { useAuthStore } from "@/stores/auth";
 import type { AgentConfig } from "@/types/agent/agent";
 import type { AgentFormData } from "@/types/agent/form";
 
@@ -7,10 +6,7 @@ export class AgentStorageService {
   private static readonly BASE_STORAGE_KEY = "yiqi_agents";
 
   // 获取当前用户的存储key
-  private static getUserStorageKey(): string {
-    const authStore = useAuthStore();
-    const userId = authStore.user?.id;
-
+  private static getUserStorageKey(userId?: string): string {
     if (!userId) {
       console.warn("用户未登录，使用默认存储key");
       return this.BASE_STORAGE_KEY;
@@ -33,9 +29,9 @@ export class AgentStorageService {
   // ========== 基础存储操作 ==========
 
   // 保存agents到localStorage
-  static saveAgents(agents: AgentConfig[]): void {
+  static saveAgents(agents: AgentConfig[], userId?: string): void {
     try {
-      const storageKey = this.getUserStorageKey();
+      const storageKey = this.getUserStorageKey(userId);
       localStorage.setItem(storageKey, JSON.stringify(agents));
     } catch (error) {
       console.error("保存agents失败:", error);
@@ -44,9 +40,9 @@ export class AgentStorageService {
   }
 
   // 从localStorage加载agents
-  static loadAgents(): AgentConfig[] {
+  static loadAgents(userId?: string): AgentConfig[] {
     try {
-      const storageKey = this.getUserStorageKey();
+      const storageKey = this.getUserStorageKey(userId);
       const data = localStorage.getItem(storageKey);
       const parsed = data?.length ? JSON.parse(data) : null;
       if (parsed?.length) {
@@ -62,9 +58,9 @@ export class AgentStorageService {
   // ========== 单个agent操作 - CRUD ==========
 
   // CREATE: 创建单个agent
-  static createAgent(formData: AgentFormData): AgentConfig {
+  static createAgent(formData: AgentFormData, userId?: string): AgentConfig {
     try {
-      const agents = this.loadAgents();
+      const agents = this.loadAgents(userId);
 
       const newAgent: AgentConfig = {
         id: this.generateId(),
@@ -78,7 +74,7 @@ export class AgentStorageService {
       };
 
       agents.push(newAgent);
-      this.saveAgents(agents);
+      this.saveAgents(agents, userId);
 
       return newAgent;
     } catch (error) {
@@ -88,9 +84,9 @@ export class AgentStorageService {
   }
 
   // READ: 根据ID获取单个agent
-  static getAgentById(id: string): AgentConfig | null {
+  static getAgentById(id: string, userId?: string): AgentConfig | null {
     try {
-      const agents = this.loadAgents();
+      const agents = this.loadAgents(userId);
       return agents.find((agent) => agent.id === id) || null;
     } catch (error) {
       console.error("获取agent失败:", error);
@@ -99,9 +95,13 @@ export class AgentStorageService {
   }
 
   // UPDATE: 更新单个agent
-  static updateAgent(id: string, formData: AgentFormData): AgentConfig {
+  static updateAgent(
+    id: string,
+    formData: AgentFormData,
+    userId?: string,
+  ): AgentConfig {
     try {
-      const agents = this.loadAgents();
+      const agents = this.loadAgents(userId);
       const index = agents.findIndex((agent) => agent.id === id);
 
       if (index === -1) {
@@ -122,7 +122,7 @@ export class AgentStorageService {
         updatedAt: new Date().toISOString(),
       };
       agents[index] = updatedAgent;
-      this.saveAgents(agents);
+      this.saveAgents(agents, userId);
 
       return agents[index];
     } catch (error) {
@@ -132,9 +132,9 @@ export class AgentStorageService {
   }
 
   // DELETE: 删除单个agent
-  static deleteAgent(id: string): void {
+  static deleteAgent(id: string, userId?: string): void {
     try {
-      const agents = this.loadAgents();
+      const agents = this.loadAgents(userId);
       const agentToDelete = agents.find((agent) => agent.id === id);
 
       if (!agentToDelete) {
@@ -142,7 +142,7 @@ export class AgentStorageService {
       }
 
       const filteredAgents = agents.filter((agent) => agent.id !== id);
-      this.saveAgents(filteredAgents);
+      this.saveAgents(filteredAgents, userId);
     } catch (error) {
       console.error("删除agent失败:", error);
       throw error;
