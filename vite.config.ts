@@ -53,30 +53,33 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // 将 Element Plus 相关的模块放入 main chunk，确保先初始化
+          // 1. Element Plus 独立打包（UI 框架，更新频率低）
           if (id.includes("element-plus") || id.includes("@element-plus")) {
             return "element-ui";
           }
 
-          // 将 services 目录下的所有模块打包到同一个 chunk
-          if (id.includes("src/services/")) {
-            return "services";
+          // 2. Vue 核心库独立打包（框架核心，极少更新）
+          if (
+            id.includes("node_modules/vue") ||
+            id.includes("node_modules/@vue") ||
+            id.includes("node_modules/pinia") ||
+            id.includes("node_modules/vue-router")
+          ) {
+            return "vue-vendor";
           }
 
-          // 将 composables 目录下的所有模块打包到同一个 chunk
-          if (id.includes("src/composables/")) {
-            return "composables";
-          }
-
-          // 其他第三方库
+          // 3. 其他第三方库
           if (id.includes("node_modules/")) {
             return "vendor";
           }
+
+          // 4. 业务代码不手动分块，让 Rollup 自动按路由分割
+          // services 和 composables 不再手动分块（已解决循环依赖）
         },
       },
     },
-    // 调整 chunk 大小警告阈值到 1000KB
-    chunkSizeWarningLimit: 1000,
+    // 设置 chunk 大小警告阈值为 500KB
+    chunkSizeWarningLimit: 500,
   },
   server: {
     port: 3000,
