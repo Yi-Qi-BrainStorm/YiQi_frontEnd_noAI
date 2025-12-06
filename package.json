@@ -10,7 +10,14 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
     "prepare": "husky",
-    "tailwind-init": "tailwindcss init -p"
+    "tailwind-init": "tailwindcss init -p",
+    "analyze": "node scripts/performance-compare.js",
+    "analyze:json": "node scripts/performance-compare.js --json",
+    "build:analyze": "ANALYZE=true vue-tsc -b && vite build",
+    "perf:test": "node scripts/lighthouse-test.js",
+    "perf:before": "node scripts/lighthouse-test.js --before",
+    "perf:after": "node scripts/lighthouse-test.js --after",
+    "perf:compare": "node scripts/lighthouse-test.js --compare"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
@@ -40,6 +47,7 @@
     "lint-staged": "^16.2.6",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
+    "rollup-plugin-visualizer": "^6.0.5",
     "sass-embedded": "^1.93.2",
     "scss": "^0.2.4",
     "tailwindcss": "^3.4.17",

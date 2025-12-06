@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+import { visualizer } from "rollup-plugin-visualizer";
 import { resolve } from "path";
 
 // https://vite.dev/config/
@@ -41,6 +42,16 @@ export default defineConfig({
       // 可选：你可以在这里配置要自动导入的自定义组件目录
       dirs: ["src/components"],
       dts: "src/types/components.d.ts",
+    }),
+
+    // 3. 构建可视化分析插件 (Requirements: 3.4)
+    // 仅在 build 时生成报告，通过环境变量控制是否启用
+    visualizer({
+      filename: "dist/stats.html",
+      open: process.env.ANALYZE === "true",
+      gzipSize: true,
+      brotliSize: true,
+      template: "treemap", // 可选: 'sunburst', 'network', 'treemap'
     }),
   ],
   resolve: {
