@@ -1,4 +1,4 @@
-import { profileService } from "@/services";
+import { profileService } from "@/services/profileService";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { CacheWorkerManager } from "@/composables/useWorker/cacheWorkerManager";

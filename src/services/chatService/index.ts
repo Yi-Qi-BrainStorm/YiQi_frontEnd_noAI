@@ -1,4 +1,4 @@
-import { ApiService } from "@/services";
+import { ApiService } from "@/services/api";
 import type {
   SendMessageRequest,
   SendMessageResponse,

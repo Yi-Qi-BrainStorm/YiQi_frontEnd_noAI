@@ -3,7 +3,7 @@ import type { LoginForm } from "./types";
 import type { LoginCardExpose } from "@/components/logincard/types";
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useAuth } from "@/composables";
+import { useAuth } from "@/composables/useAuth";
 import { ElMessage } from "element-plus";
 import type { LoginRequest, RegisterRequest } from "@/types/api/auth";
 import LoginCard from "@/components/logincard/index.vue";

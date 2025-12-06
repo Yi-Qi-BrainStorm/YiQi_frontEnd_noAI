@@ -1,4 +1,4 @@
-import { ApiService } from "@/services";
+import { ApiService } from "@/services/api";
 import type { ProfileResponse } from "@/types/api/auth";
 
 //认证相关API服务

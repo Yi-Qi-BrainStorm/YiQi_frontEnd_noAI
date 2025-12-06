@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { authService } from "@/services";
+import { authService } from "@/services/authService";
 import type { LoginRequest, RegisterRequest, User } from "@/types/api/auth";
 import { CacheWorkerManager } from "@/composables/useWorker/cacheWorkerManager";
 import { UserCacheService } from "@/services/userCacheService";

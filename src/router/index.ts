@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { routes } from "./routes";
-import { useAuth } from "@/composables";
+import { useAuth } from "@/composables/useAuth";
 import { useAgentStore } from "@/stores/agent";
 
 // 2. 创建路由实例
