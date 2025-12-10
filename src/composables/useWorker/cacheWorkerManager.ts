@@ -1,6 +1,6 @@
-// src/composables/useWorker/CacheWorkerManager.ts
-import { BaseWorkerManager } from "./baseWorkerManager.ts";
-import type { CacheMessage, CacheResponse } from "@/types/worker/cache.ts";
+// src/composables/useWorker/cacheWorkerManager.ts
+import { BaseWorkerManager } from "./baseWorkerManager";
+import type { CacheMessage, CacheResponse } from "@/types/worker/cache";
 
 // 单例模式：确保整个应用只有一个 Worker 实例
 let cacheWorkerManagerInstance: CacheWorkerManager | null = null;
