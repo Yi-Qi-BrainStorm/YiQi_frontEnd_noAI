@@ -5,6 +5,7 @@ import userCard from "@/components/usercard/index.vue";
 import { useProfileStore } from "@/stores/profile";
 import { useRouter } from "vue-router";
 import { useNetworkStatus } from "@/composables/useNetworkStatus";
+import NetworkStatusIndicator from "@/components/NetworkStatusIndicator/index.vue";
 
 //取到路由器
 const router = useRouter();
@@ -107,6 +108,9 @@ onUnmounted(() => {
     <div v-if="showUserCard" class="user-card-container" @click.stop>
       <userCard />
     </div>
+
+    <!-- 网络状态指示器 (Requirements: 8.4) -->
+    <NetworkStatusIndicator position="top-right" :auto-hide="true" />
   </div>
 </template>
 

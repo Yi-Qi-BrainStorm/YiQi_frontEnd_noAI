@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AgentForm: typeof import('./../components/AgentForm/index.vue')['default']
     ChatPanel: typeof import('./../components/ChatPanel/index.vue')['default']
+    ElAlert: typeof import('element-plus/es')['ElAlert']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
@@ -31,6 +32,7 @@ declare module 'vue' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Logincard: typeof import('./../components/logincard/index.vue')['default']
+    NetworkStatusIndicator: typeof import('./../components/NetworkStatusIndicator/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SidebarMenu: typeof import('./../components/sidebarMenu/index.vue')['default']

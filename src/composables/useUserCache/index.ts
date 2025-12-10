@@ -11,7 +11,8 @@ export function useUserCache() {
   const isFromCache = ref(false);
   const error = ref<string | null>(null);
 
-  const { isOnline } = useNetworkStatus();
+  // 使用增强的网络状态 composable (Requirements: 8.2)
+  const { isOnline, dataSource, isUsingCache } = useNetworkStatus();
   // 使用单例模式，确保整个应用只有一个 Worker 实例
   const cacheWorkerManager = CacheWorkerManager.getInstance();
   const userCacheService = new UserCacheService(cacheWorkerManager);
@@ -117,10 +118,20 @@ export function useUserCache() {
     }
   };
 
-  // 网络状态变化时重新加载
+  // 网络状态变化时重新加载 (Requirements: 8.2, 8.3)
   watch(isOnline, (newStatus) => {
     if (newStatus && userInfo.value) {
+      // 网络恢复时，从网络重新加载数据
       loadUserInfo(userInfo.value.id);
+    }
+  });
+
+  // 监听数据源变化 (Requirements: 8.2)
+  watch(dataSource, (newSource) => {
+    console.log(`[useUserCache] 数据源切换: ${newSource}`);
+    if (newSource === "cache" && userInfo.value) {
+      // 切换到缓存模式时，标记数据来源
+      isFromCache.value = true;
     }
   });
 
@@ -130,6 +141,8 @@ export function useUserCache() {
     error,
     isFromCache,
     isOnline,
+    dataSource,
+    isUsingCache,
     loadUserInfo,
     updateUserInfo,
   };
